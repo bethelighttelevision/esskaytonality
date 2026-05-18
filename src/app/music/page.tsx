@@ -928,44 +928,39 @@ export default function MusicPage() {
       </AnimatePresence>
 
       {/* 4. Bottom Sticky Premium Audio Player Controller Bar */}
-      <div className="fixed bottom-0 inset-x-0 z-40 bg-brand-surface/90 backdrop-blur-xl border-t border-white/5 py-6 px-6 md:px-12 shadow-[0_-15px_50px_rgba(0,0,0,0.7)] flex flex-col gap-4">
+      <div className="fixed bottom-0 inset-x-0 z-40 bg-brand-surface/95 backdrop-blur-xl border-t border-white/5 shadow-[0_-15px_50px_rgba(0,0,0,0.85)] flex flex-col">
         
-        {/* Timeline Seek-bar wrapper */}
-        <div className="flex items-center gap-4 w-full">
-          <span className="text-xs font-bold text-brand-muted tracking-widest shrink-0 w-10 text-right">{formatTime(currentTime)}</span>
-          <div className="relative flex-1 group">
-            {/* Glowing fill slider */}
-            <input 
-              type="range"
-              min={0}
-              max={duration || 100}
-              value={currentTime}
-              onChange={handleSeek}
-              className="w-full h-1.5 rounded-lg appearance-none bg-white/10 outline-none cursor-pointer accent-brand-primary group-hover:bg-white/20 transition-colors"
-              style={{
-                background: `linear-gradient(to right, #00ffff 0%, #00ffff ${(currentTime / (duration || 1)) * 100}%, rgba(255,255,255,0.1) ${(currentTime / (duration || 1)) * 100}%, rgba(255,255,255,0.1) 100%)`
-              }}
-            />
-          </div>
-          <span className="text-xs font-bold text-brand-muted tracking-widest shrink-0 w-10 text-left">{formatTime(duration)}</span>
+        {/* Timeline Seek-bar: Full-width compact progress bar on top */}
+        <div className="relative w-full h-1 bg-white/5 cursor-pointer group">
+          <input 
+            type="range"
+            min={0}
+            max={duration || 100}
+            value={currentTime}
+            onChange={handleSeek}
+            className="absolute -top-1 left-0 w-full h-3 appearance-none bg-transparent outline-none cursor-pointer accent-brand-primary"
+            style={{
+              background: `linear-gradient(to right, #00ffff 0%, #00ffff ${(currentTime / (duration || 1)) * 100}%, rgba(255,255,255,0.08) ${(currentTime / (duration || 1)) * 100}%, rgba(255,255,255,0.03) 100%)`
+            }}
+          />
         </div>
 
-        {/* Media Interaction controls panel */}
-        <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+        {/* Responsive Content Container: Single horizontal row on mobile! */}
+        <div className="py-3 px-4 md:py-5 md:px-12 flex items-center justify-between gap-4">
           
           {/* Left panel: Selected Track details */}
-          <div className="flex items-center gap-4 w-full md:w-1/3 min-w-0">
-            <div className="w-12 h-12 rounded-xl overflow-hidden border border-white/10 shrink-0">
+          <div className="flex items-center gap-3 min-w-0 flex-1 md:flex-initial md:w-1/3">
+            <div className="w-10 h-10 md:w-12 md:h-12 rounded-lg md:rounded-xl overflow-hidden border border-white/10 shrink-0 shadow-lg">
               <img src={currentTrack.image} alt={currentTrack.title} className="w-full h-full object-cover" />
             </div>
             <div className="min-w-0">
-              <h4 className="font-bold text-sm tracking-wide uppercase text-white truncate">{currentTrack.title}</h4>
-              <p className="text-xs text-brand-muted truncate mt-0.5">{currentTrack.artist}</p>
+              <h4 className="font-bold text-xs md:text-sm tracking-wide uppercase text-white truncate">{currentTrack.title}</h4>
+              <p className="text-[10px] md:text-xs text-brand-muted truncate mt-0.5">{currentTrack.artist}</p>
             </div>
           </div>
 
-          {/* Center panel: Navigation Controls (Large glowing play trigger) */}
-          <div className="flex items-center gap-6 justify-center">
+          {/* Center panel: Navigation Controls (Desktop version - Hidden on Mobile) */}
+          <div className="hidden md:flex items-center gap-6 justify-center">
             
             {/* Loop Toggle */}
             <button 
@@ -992,13 +987,13 @@ export default function MusicPage() {
             {/* Center Master Play Toggle */}
             <button 
               onClick={togglePlay}
-              className="w-14 h-14 rounded-full bg-brand-primary hover:bg-white text-black flex items-center justify-center shadow-[0_0_25px_rgba(0,255,255,0.3)] hover:shadow-[0_0_35px_rgba(255,255,255,0.6)] transition-all duration-300"
+              className="w-12 h-12 rounded-full bg-brand-primary hover:bg-white text-black flex items-center justify-center shadow-[0_0_20px_rgba(0,255,255,0.25)] hover:shadow-[0_0_30px_rgba(255,255,255,0.5)] transition-all duration-300"
               title={isPlaying ? "Pause" : "Play"}
             >
               {isPlaying ? (
-                <Pause className="w-6 h-6 text-black fill-black" />
+                <Pause className="w-5 h-5 text-black fill-black" />
               ) : (
-                <Play className="w-6 h-6 text-black fill-black ml-0.5" />
+                <Play className="w-5 h-5 text-black fill-black ml-0.5" />
               )}
             </button>
 
@@ -1026,8 +1021,39 @@ export default function MusicPage() {
 
           </div>
 
-          {/* Right panel: Audio Output Volume levels controls */}
-          <div className="flex items-center gap-3 w-full md:w-1/3 justify-end shrink-0">
+          {/* Mobile Navigation Controls (Compact - Hidden on Desktop) */}
+          <div className="flex md:hidden items-center gap-2.5 shrink-0">
+            <button 
+              onClick={handlePrevTrack} 
+              className="p-2 text-brand-muted hover:text-white transition-colors"
+              title="Previous Track"
+            >
+              <SkipBack className="w-4.5 h-4.5" />
+            </button>
+            
+            <button 
+              onClick={togglePlay}
+              className="w-9 h-9 rounded-full bg-brand-primary text-black flex items-center justify-center shadow-[0_0_15px_rgba(0,255,255,0.2)]"
+              title={isPlaying ? "Pause" : "Play"}
+            >
+              {isPlaying ? (
+                <Pause className="w-4.5 h-4.5 text-black fill-black" />
+              ) : (
+                <Play className="w-4.5 h-4.5 text-black fill-black ml-0.5" />
+              )}
+            </button>
+
+            <button 
+              onClick={handleNextTrack} 
+              className="p-2 text-brand-muted hover:text-white transition-colors"
+              title="Next Track"
+            >
+              <SkipForward className="w-4.5 h-4.5" />
+            </button>
+          </div>
+
+          {/* Right panel: Audio Output Volume levels controls (Desktop only - Hidden on Mobile) */}
+          <div className="hidden md:flex items-center gap-3 w-1/3 justify-end shrink-0">
             <button 
               onClick={toggleMute}
               className="text-brand-muted hover:text-white transition-colors p-2"
@@ -1046,7 +1072,7 @@ export default function MusicPage() {
               step={0.01}
               value={isMuted ? 0 : volume}
               onChange={handleVolumeChange}
-              className="w-24 h-1 rounded-lg appearance-none bg-white/10 outline-none cursor-pointer accent-brand-primary"
+              className="w-20 h-1 appearance-none bg-white/10 outline-none cursor-pointer accent-brand-primary"
               style={{
                 background: `linear-gradient(to right, #00ffff 0%, #00ffff ${(isMuted ? 0 : volume) * 100}%, rgba(255,255,255,0.1) ${(isMuted ? 0 : volume) * 100}%, rgba(255,255,255,0.1) 100%)`
               }}

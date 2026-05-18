@@ -88,38 +88,38 @@ export default function NewsMediaPage() {
   return (
     <div className="w-full pt-24 pb-12 min-h-screen">
       {/* Header */}
-      <section className="container mx-auto px-6 md:px-12 mb-16">
+      <section className="container mx-auto px-6 md:px-12 mb-10 md:mb-16">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
           className="max-w-3xl"
         >
-          <h1 className="text-5xl md:text-7xl font-bold uppercase tracking-tighter mb-6">
+          <h1 className="text-4xl md:text-7xl font-bold uppercase tracking-tighter mb-4 md:mb-6">
             News & <span className="text-gradient">Media</span>
           </h1>
-          <p className="text-xl text-brand-muted">
+          <p className="text-base md:text-xl text-brand-muted leading-relaxed">
             The latest updates, artist announcements, event coverage, and exclusive behind-the-scenes content from Esskaytonality.
           </p>
         </motion.div>
       </section>
 
-      {/* Category Filter */}
-      <section className="container mx-auto px-6 md:px-12 mb-12">
-        <div className="flex flex-wrap gap-4">
+      {/* Category Filter: Premium swipeable horizontal scroller on mobile! */}
+      <section className="container mx-auto px-6 md:px-12 mb-10">
+        <div className="flex flex-row overflow-x-auto no-scrollbar whitespace-nowrap gap-3 pb-3 -mx-6 px-6 md:mx-0 md:px-0 scroll-smooth">
           {categories.map((category, idx) => {
             const Icon = category.icon;
             return (
               <button
                 key={idx}
-                className={`flex items-center gap-2 px-6 py-3 rounded-full border transition-all duration-300 ${
+                className={`flex items-center gap-2 px-5 py-2.5 rounded-full border transition-all duration-300 shrink-0 ${
                   idx === 0 
-                    ? "bg-brand-primary border-brand-primary text-white shadow-[0_0_15px_rgba(138,43,226,0.3)]" 
+                    ? "bg-brand-primary border-brand-primary text-white shadow-[0_0_15px_rgba(138,43,226,0.25)]" 
                     : "glass border-white/10 text-brand-muted hover:text-white hover:border-brand-accent/50"
                 }`}
               >
-                <Icon className="w-4 h-4" />
-                <span className="text-sm font-bold uppercase tracking-wider">{category.name}</span>
+                <Icon className="w-3.5 h-3.5" />
+                <span className="text-xs font-bold uppercase tracking-wider">{category.name}</span>
               </button>
             );
           })}
@@ -127,7 +127,7 @@ export default function NewsMediaPage() {
       </section>
 
       {/* Featured News */}
-      <section className="container mx-auto px-6 md:px-12 mb-16">
+      <section className="container mx-auto px-6 md:px-12 mb-12 md:mb-16">
         {newsItems.filter(item => item.featured).map((news) => (
           <motion.div 
             key={news.id}
@@ -143,25 +143,25 @@ export default function NewsMediaPage() {
               />
             </div>
             
-            <div className="relative z-10 p-8 md:p-16 flex flex-col justify-end min-h-[60vh] bg-gradient-to-t from-brand-bg via-brand-bg/80 to-transparent">
-              <div className="flex items-center gap-4 mb-4">
-                <span className="px-4 py-1 text-xs font-bold uppercase tracking-wider text-brand-bg bg-brand-accent rounded-full">
+            <div className="relative z-10 p-6 sm:p-10 md:p-16 flex flex-col justify-end min-h-[50vh] md:min-h-[60vh] bg-gradient-to-t from-brand-bg via-brand-bg/85 to-transparent">
+              <div className="flex flex-wrap items-center gap-3 mb-4">
+                <span className="px-3 py-1 text-[10px] sm:text-xs font-bold uppercase tracking-wider text-brand-bg bg-brand-accent rounded-full">
                   {news.category}
                 </span>
-                <span className="text-sm font-medium text-brand-muted flex items-center gap-2">
-                  <Calendar className="w-4 h-4" /> {news.date}
+                <span className="text-xs sm:text-sm font-medium text-brand-muted flex items-center gap-1.5">
+                  <Calendar className="w-3.5 h-3.5" /> {news.date}
                 </span>
               </div>
               
-              <h2 className="text-4xl md:text-6xl font-bold uppercase tracking-tight mb-4 max-w-4xl group-hover:text-brand-accent transition-colors duration-300">
+              <h2 className="text-2xl sm:text-4xl md:text-6xl font-bold uppercase tracking-tight mb-4 max-w-4xl group-hover:text-brand-accent transition-colors duration-300">
                 {news.title}
               </h2>
               
-              <p className="text-lg text-brand-muted max-w-2xl mb-8">
+              <p className="text-xs sm:text-sm md:text-lg text-brand-muted max-w-2xl mb-6 md:mb-8 leading-relaxed">
                 {news.excerpt}
               </p>
               
-              <Link href="#" className="inline-flex items-center gap-2 text-white font-bold uppercase tracking-widest text-sm hover:text-brand-accent transition-colors w-fit">
+              <Link href="#" className="inline-flex items-center gap-2 text-white font-bold uppercase tracking-widest text-xs sm:text-sm hover:text-brand-accent transition-colors w-fit">
                 Read Full Article <ArrowRight className="w-4 h-4" />
               </Link>
             </div>

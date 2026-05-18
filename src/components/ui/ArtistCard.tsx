@@ -6,6 +6,7 @@ import Link from "next/link";
 
 interface ArtistCardProps {
   artist: {
+    id?: string;
     name: string;
     genre: string;
     image: string;
@@ -43,6 +44,8 @@ export default function ArtistCard({ artist, index }: ArtistCardProps) {
     y.set(0);
   };
 
+  const artistId = artist.id || artist.name.toLowerCase().replace(/ \/ /g, "-").replace(/ /g, "-");
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 30 }}
@@ -52,7 +55,7 @@ export default function ArtistCard({ artist, index }: ArtistCardProps) {
       style={{ perspective: 1000 }}
       className="relative aspect-[3/4] w-full"
     >
-      <Link href="/artists">
+      <Link href={`/artists/${artistId}`}>
         <motion.div
           onMouseMove={handleMouseMove}
           onMouseLeave={handleMouseLeave}

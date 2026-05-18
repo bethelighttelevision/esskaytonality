@@ -6,26 +6,36 @@ import Link from "next/link";
 import HeroCarousel from "@/components/ui/HeroCarousel";
 import ArtistCard from "@/components/ui/ArtistCard";
 
+import { useState, useEffect } from "react";
+import { createClient } from "@/utils/supabase/client";
+
 export default function Home() {
-  const container = {
-    hidden: { opacity: 0 },
-    show: {
-      opacity: 1,
-      transition: { staggerChildren: 0.2 },
-    },
-  };
+  const [featuredArtists, setFeaturedArtists] = useState<any[]>([]);
+  const supabase = createClient();
 
-  const item = {
-    hidden: { opacity: 0, y: 20 },
-    show: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } },
-  };
+  useEffect(() => {
+    const loadFeatured = async () => {
+      const { data } = await supabase
+        .from("settings")
+        .select("value")
+        .eq("key", "artists_data")
+        .single();
+      
+      const list = data?.value || [
+        { id: "sahir-alam", name: "SAHIR ALAM", genre: "INDIE / POP / CINEMATIC", profile: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=2070&auto=format&fit=crop" },
+        { id: "the-weeknd", name: "THE WEEKND", genre: "R&B / POP", profile: "https://images.unsplash.com/photo-1571343753761-0d32c96b7978?q=80&w=2070&auto=format&fit=crop" }
+      ];
 
-  const featuredArtists = [
-    { name: "THE WEEKND", genre: "R&B / POP", image: "https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?q=80&w=2070&auto=format&fit=crop" },
-    { name: "TRAVIS SCOTT", genre: "HIP HOP", image: "https://images.unsplash.com/photo-1459749411175-04bf5292ceea?q=80&w=2070&auto=format&fit=crop" },
-    { name: "DUA LIPA", genre: "POP", image: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=2070&auto=format&fit=crop" },
-    { name: "KENDRICK LAMAR", genre: "HIP HOP", image: "https://images.unsplash.com/photo-1520443240718-fce21901db79?q=80&w=2070&auto=format&fit=crop" }
-  ];
+      const cards = list.map((a: any) => ({
+        id: a.id,
+        name: a.name,
+        genre: a.genre,
+        image: a.profile
+      })).slice(0, 4);
+      setFeaturedArtists(cards);
+    };
+    loadFeatured();
+  }, []);
 
   return (
     <div className="w-full">
@@ -36,7 +46,7 @@ export default function Home() {
       <section className="py-24 container mx-auto px-6 md:px-12">
         <div className="flex justify-between items-end mb-12">
           <div>
-            <h2 className="text-4xl md:text-5xl font-bold uppercase tracking-tight mb-2">Featured Roster</h2>
+            <h2 className="text-4xl md:text-5xl font-bold uppercase tracking-tight mb-2">Featured Rockstars</h2>
             <p className="text-brand-muted">The faces defining modern sound.</p>
           </div>
           <Link href="/artists" className="hidden md:flex items-center gap-2 text-brand-accent hover:text-white transition-colors uppercase text-sm font-bold tracking-wider">

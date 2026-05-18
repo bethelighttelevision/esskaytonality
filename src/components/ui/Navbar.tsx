@@ -132,6 +132,47 @@ export default function Navbar() {
               {link.name}
             </Link>
           ))}
+
+          {/* User state buttons for Mobile */}
+          <div className="w-full flex flex-col items-center gap-4 border-t border-white/10 pt-6 mt-2 px-6">
+            {user ? (
+              <>
+                <Link 
+                  href="/user/dashboard" 
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="text-lg font-bold tracking-widest uppercase text-brand-text/80 hover:text-white transition-colors flex items-center gap-2"
+                >
+                  <LayoutDashboard className="w-5 h-5" /> Dashboard
+                </Link>
+                <button 
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    supabase.auth.signOut().then(() => window.location.href = "/");
+                  }}
+                  className="w-full py-3 rounded-full bg-white/5 border border-white/10 text-white text-sm font-bold tracking-widest uppercase hover:bg-white/10 transition-colors flex items-center justify-center gap-2"
+                >
+                  <LogOut className="w-4 h-4" /> Exit
+                </button>
+              </>
+            ) : (
+              <>
+                <Link 
+                  href="/login" 
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="text-lg font-bold tracking-widest uppercase text-brand-text/80 hover:text-white transition-colors"
+                >
+                  Log In
+                </Link>
+                <Link 
+                  href="/register" 
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="w-full py-3 rounded-full bg-brand-primary text-black text-center text-sm font-bold tracking-widest uppercase hover:bg-white transition-colors shadow-[0_0_15px_rgba(0,255,255,0.2)]"
+                >
+                  Sign Up
+                </Link>
+              </>
+            )}
+          </div>
         </motion.div>
       )}
     </header>

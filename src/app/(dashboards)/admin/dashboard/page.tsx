@@ -1,7 +1,7 @@
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { Users, ShieldAlert, Music, Mic2, UploadCloud, Settings, Trash2 } from "lucide-react";
+import { Users, ShieldAlert, Music, Mic2, UploadCloud, Settings, Trash2, Mail } from "lucide-react";
 
 export default async function AdminDashboard() {
   const supabase = await createClient();
@@ -79,7 +79,7 @@ export default async function AdminDashboard() {
 
       {/* Quick Actions */}
       <h2 className="text-xl font-bold uppercase tracking-wider mb-6 mt-12 border-l-4 border-brand-primary pl-4">Management Actions</h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
         <Link href="/admin/dashboard/upload" className="glass p-6 rounded-2xl border border-white/10 hover:border-brand-primary/50 cursor-pointer transition-colors group">
           <UploadCloud className="w-8 h-8 text-white mb-4 group-hover:text-brand-primary transition-colors" />
           <h3 className="text-sm font-bold uppercase tracking-wider mb-2">Upload Release</h3>
@@ -102,6 +102,12 @@ export default async function AdminDashboard() {
           <Users className="w-8 h-8 text-white mb-4 group-hover:text-brand-primary transition-colors" />
           <h3 className="text-sm font-bold uppercase tracking-wider mb-2">Manage Users</h3>
           <p className="text-xs text-brand-muted">View and suspend listeners</p>
+        </Link>
+
+        <Link href="/admin/dashboard/inquiries" className="glass p-6 rounded-2xl border border-white/10 hover:border-brand-primary/50 cursor-pointer transition-colors group">
+          <Mail className="w-8 h-8 text-white mb-4 group-hover:text-brand-primary transition-colors" />
+          <h3 className="text-sm font-bold uppercase tracking-wider mb-2">View Inquiries</h3>
+          <p className="text-xs text-brand-muted">Read dynamic secure messages</p>
         </Link>
       </div>
 
