@@ -31,7 +31,7 @@ export default function Footer() {
           {/* Brand */}
           <div className="col-span-1 md:col-span-1">
             <Link href="/" className="flex items-center gap-2 group mb-6">
-              <EsskayLogo size={30} showText={true} />
+              <EsskayLogo size={40} showText={true} />
             </Link>
             <p className="text-brand-muted text-sm leading-relaxed mb-6">
               A music entertainment platform and digital record label. Discover the next generation of sound.

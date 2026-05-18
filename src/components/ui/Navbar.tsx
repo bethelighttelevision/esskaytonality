@@ -55,7 +55,7 @@ export default function Navbar() {
       <div className="container mx-auto px-6 md:px-12 flex justify-between items-center">
         {/* Animated Logo */}
         <Link href="/" className="flex items-center gap-0">
-          <EsskayLogo size={34} showText={true} />
+          <EsskayLogo size={42} showText={true} />
         </Link>
 
         {/* Desktop Nav */}

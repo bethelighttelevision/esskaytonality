@@ -66,11 +66,13 @@ export default function EsskayLogo({ size = 36, showText = true, className = "" 
           );
         })}
 
-        {/* Speaker / megaphone — static */}
-        <polygon points="33,13 46,7 46,33 33,27" fill={GRAY} />
-        <polygon points="33,15 44,10 44,30 33,25" fill="#777" opacity="0.35" />
-        <ellipse cx="46.2" cy="20" rx="1.8" ry="2.8" fill={GRAY} />
-        <ellipse cx="46.2" cy="20" rx="0.9" ry="1.6" fill="#9A9A9A" />
+        {/* Speaker / megaphone — static (Facing Left towards waves) */}
+        <polygon points="33,7 45,13 45,27 33,33" fill={GRAY} />
+        {/* Inner highlight for 3D metallic feel */}
+        <polygon points="33,9 43,15 43,25 33,31" fill="#777" opacity="0.35" />
+        {/* Speaker tip knob */}
+        <ellipse cx="46" cy="20" rx="1.8" ry="2.8" fill={GRAY} />
+        <ellipse cx="46.5" cy="20" rx="0.9" ry="1.6" fill="#9A9A9A" />
       </svg>
 
       {/* Logo wordmark */}
