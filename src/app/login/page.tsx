@@ -76,15 +76,12 @@ export default function LoginPage() {
           )}
 
           {/* Social Logins */}
-          <div className="space-y-3 mb-8 relative">
-            <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/40 backdrop-blur-[2px] rounded-xl">
-              <span className="text-xs font-bold tracking-widest text-white uppercase bg-black/80 px-3 py-1 rounded-full border border-white/20">Setup Required in Supabase</span>
-            </div>
-            <div className="opacity-50 pointer-events-none space-y-3">
-              <button 
-                type="button"
-                className="w-full relative flex items-center justify-center gap-3 py-3.5 px-4 rounded-xl bg-white text-black font-bold text-sm tracking-wide shadow-lg"
-              >
+          <div className="space-y-3 mb-8">
+            <button 
+              type="button"
+              onClick={handleGoogleLogin}
+              className="w-full relative flex items-center justify-center gap-3 py-3.5 px-4 rounded-xl bg-white text-black font-bold text-sm tracking-wide shadow-lg hover:bg-neutral-100 transition-colors"
+            >
               <svg className="w-5 h-5" viewBox="0 0 24 24">
                 <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
                 <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
@@ -93,13 +90,6 @@ export default function LoginPage() {
               </svg>
               Continue with Google
             </button>
-            <button className="w-full relative flex items-center justify-center gap-3 py-3.5 px-4 rounded-xl bg-neutral-900 border border-white/10 text-white font-bold text-sm tracking-wide hover:bg-black transition-colors shadow-lg">
-              <svg className="w-5 h-5 fill-white" viewBox="0 0 24 24">
-                <path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.43.987 3.96.948 1.605-.05 2.658-1.543 3.638-3.003 1.13-1.653 1.595-3.26 1.625-3.344-.035-.015-3.125-1.198-3.155-4.786-.025-2.997 2.445-4.437 2.56-4.512-1.393-2.046-3.54-2.288-4.298-2.327-1.745-.084-3.411 1.115-4.321 1.115-.91 0-2.285-1.096-3.704-1.054zM15.066 3.93c.806-.98 1.348-2.342 1.2-3.692-1.178.047-2.628.784-3.468 1.764-.755.877-1.385 2.268-1.21 3.597 1.314.102 2.668-.696 3.478-1.669z" />
-              </svg>
-              Continue with Apple
-            </button>
-            </div>
           </div>
 
           <div className="flex items-center gap-4 mb-8">
