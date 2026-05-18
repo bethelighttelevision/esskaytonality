@@ -13,7 +13,7 @@ const defaultArtists = [
     banner: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=2070&auto=format&fit=crop",
     profile: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=2070&auto=format&fit=crop",
     bio: "Sahir Alam, performing under the stage name Esskay Tonality, is a multi-talented indie pop and cinematic music composer, producer, and singer-songwriter. Known for his deep atmospheric soundscapes, emotionally charged vocals, and cinematic original releases, Sahir shapes new cultural paradigms through sound.",
-    listeners: "2.5M",
+    listeners: "135",
     streaming: {
       spotify: "https://open.spotify.com/artist/0o0ENICHltyQ2gR1H82TKtye",
       apple: "https://music.apple.com/sa/artist/esskay-tonality/1546440801",

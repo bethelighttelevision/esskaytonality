@@ -59,7 +59,7 @@ export default function AboutPage() {
             </h2>
             <div className="space-y-6 text-brand-muted text-lg leading-relaxed">
               <p>
-                Founded in 2024, Esskaytonality emerged from a simple yet profound realization: the music industry needed a disruptor. A place where raw talent meets unapologetic creativity without the traditional constraints of corporate labels.
+                Founded in 2017, Esskaytonality emerged from a simple yet profound realization: the music industry needed a disruptor. A place where raw talent meets unapologetic creativity without the traditional constraints of corporate labels.
               </p>
               <p>
                 What started as a small underground collective in an abandoned warehouse has grown into a global powerhouse. We've built an ecosystem that nurtures artists, providing them with state-of-the-art facilities and unyielding creative control.

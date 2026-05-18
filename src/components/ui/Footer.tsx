@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { Disc3, Mail } from "lucide-react";
+import { Mail } from "lucide-react";
+import EsskayLogo from "@/components/ui/EsskayLogo";
 
 const InstagramIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
@@ -30,13 +31,10 @@ export default function Footer() {
           {/* Brand */}
           <div className="col-span-1 md:col-span-1">
             <Link href="/" className="flex items-center gap-2 group mb-6">
-              <Disc3 className="w-8 h-8 text-brand-primary animate-spin-slow" />
-              <span className="text-xl font-bold tracking-widest uppercase">
-                Esskay<span className="text-gradient">tonality</span>
-              </span>
+              <EsskayLogo size={30} showText={true} />
             </Link>
             <p className="text-brand-muted text-sm leading-relaxed mb-6">
-              A premium music entertainment platform and digital record label. Discover the next generation of sound.
+              A music entertainment platform and digital record label. Discover the next generation of sound.
             </p>
             <div className="flex items-center gap-4 text-brand-muted">
               <a href="https://www.instagram.com/esskaytonalityofficial?igsh=MWZseXVrNTYwZnRlbA%3D%3D&utm_source=qr" target="_blank" rel="noopener noreferrer" className="hover:text-brand-primary transition-colors"><InstagramIcon className="w-5 h-5" /></a>

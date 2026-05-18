@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import Navbar from "@/components/ui/Navbar";
 import Footer from "@/components/ui/Footer";
+import ScrollToTop from "@/components/ui/ScrollToTop";
 import "./globals.css";
 
 const inter = Inter({
@@ -10,8 +11,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "ESSKAYTONALITY | Premium Music Entertainment",
-  description: "Global premium music entertainment platform and digital record label.",
+  title: "ESSKAYTONALITY | Music Entertainment",
+  description: "Global music entertainment platform and digital record label. Discover the next generation of sound.",
 };
 
 export default function RootLayout({
@@ -27,6 +28,7 @@ export default function RootLayout({
           {children}
         </main>
         <Footer />
+        <ScrollToTop />
       </body>
     </html>
   );

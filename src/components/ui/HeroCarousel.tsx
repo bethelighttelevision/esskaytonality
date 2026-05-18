@@ -129,7 +129,7 @@ export default function HeroCarousel() {
   };
 
   return (
-    <section className="relative h-[70vh] md:h-screen w-full flex items-center justify-center overflow-hidden bg-brand-bg group">
+    <section className="relative h-[55vh] sm:h-[65vh] md:h-screen w-full flex items-center justify-center overflow-hidden bg-brand-bg group">
       
       <AnimatePresence initial={false} custom={direction}>
         <motion.div
@@ -152,10 +152,11 @@ export default function HeroCarousel() {
           />
 
           {/* 2. Deep Cinematic Overlay Gradients for depth and focus */}
-          <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-black/25 to-black/30" />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/30 to-black/40" />
           <div className="absolute inset-0 bg-gradient-to-t from-brand-bg via-transparent to-transparent opacity-95" />
+          <div className="absolute inset-0 bg-gradient-to-b from-brand-bg/90 via-black/20 to-transparent h-32 md:h-48 pointer-events-none" />
 
-          {/* 3. Central Play Button with Staggered Sound Wave Ripples (No overlaid HTML text to prevent duplicates!) */}
+          {/* 3. Central Play Button with Staggered Sound Wave Ripples */}
           <div className="absolute inset-0 flex items-center justify-center">
             <motion.div 
               initial={{ opacity: 0, scale: 0.9 }}

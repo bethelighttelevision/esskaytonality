@@ -43,7 +43,7 @@ export default function Home() {
       <HeroCarousel />
 
       {/* Featured Artists */}
-      <section className="py-24 container mx-auto px-6 md:px-12">
+      <section className="py-16 md:py-24 container mx-auto px-6 md:px-12">
         <div className="flex justify-between items-end mb-12">
           <div>
             <h2 className="text-4xl md:text-5xl font-bold uppercase tracking-tight mb-2">Featured Rockstars</h2>
@@ -54,7 +54,7 @@ export default function Home() {
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {featuredArtists.map((artist, idx) => (
             <ArtistCard key={idx} artist={artist} index={idx} />
           ))}
@@ -62,7 +62,7 @@ export default function Home() {
       </section>
 
       {/* Labels / Divisions */}
-      <section className="py-24 bg-brand-surface border-y border-white/5 relative overflow-hidden">
+      <section className="py-16 md:py-24 bg-brand-surface border-y border-white/5 relative overflow-hidden">
         <div className="container mx-auto px-6 md:px-12 relative z-10">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold uppercase tracking-tight mb-4">Divisions</h2>
@@ -91,7 +91,7 @@ export default function Home() {
       </section>
       
       {/* Latest Videos */}
-      <section className="py-24 container mx-auto px-6 md:px-12">
+      <section className="py-16 md:py-24 container mx-auto px-6 md:px-12">
         <div className="flex justify-between items-end mb-12">
           <div>
             <h2 className="text-4xl md:text-5xl font-bold uppercase tracking-tight mb-2">Cinematic Videos</h2>
@@ -101,21 +101,21 @@ export default function Home() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {[
-            { title: "Midnight City (Live Session)", image: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=2074&auto=format&fit=crop" },
-            { title: "Neon Lights (Official Video)", image: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=2070&auto=format&fit=crop" }
+            { title: "Qaid Qalandar | Sahir Alam", category: "Music Video", image: "https://img.youtube.com/vi/b-yMQjOqpHQ/maxresdefault.jpg" },
+            { title: "Tere Bina | Numan Khan | Sahir Alam", category: "Music Video", image: "https://img.youtube.com/vi/QNmwgrqbYGA/maxresdefault.jpg" }
           ].map((video, idx) => (
             <motion.div 
               key={idx}
-              whileHover="hover"
-              className="relative aspect-video rounded-xl overflow-hidden cursor-pointer group"
+              whileHover={{ scale: 1.02 }}
+              className="group relative aspect-video rounded-3xl overflow-hidden cursor-pointer"
             >
               <div 
-                className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105"
+                className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
                 style={{ backgroundImage: `url('${video.image}')` }}
               />
               <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors flex items-center justify-center">
                 <div className="relative w-20 h-20 flex items-center justify-center">
-                  {/* Sound Wave Ripple Effect (Always animating but scales/reveals more on hover) */}
+                  {/* Sound Wave Ripple Effect */}
                   <div className="absolute inset-0 rounded-full bg-brand-accent/20 border border-brand-accent/30 animate-ripple pointer-events-none" />
                   <div className="absolute inset-0 rounded-full bg-brand-accent/20 border border-brand-accent/30 animate-ripple-delay-1 pointer-events-none" />
                   <div className="absolute inset-0 rounded-full bg-brand-accent/20 border border-brand-accent/30 animate-ripple-delay-2 pointer-events-none" />
@@ -132,6 +132,7 @@ export default function Home() {
                 </div>
               </div>
               <div className="absolute bottom-0 left-0 p-6 w-full bg-gradient-to-t from-black to-transparent">
+                <p className="text-brand-accent font-bold tracking-widest uppercase text-xs mb-2">{video.category}</p>
                 <h3 className="text-xl font-bold text-white uppercase tracking-wider">{video.title}</h3>
               </div>
             </motion.div>

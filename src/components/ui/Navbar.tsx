@@ -3,8 +3,9 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Menu, X, Search, User, Disc3, LogOut, LayoutDashboard } from "lucide-react";
+import { Menu, X, Search, LogOut, LayoutDashboard } from "lucide-react";
 import { createClient } from "@/utils/supabase/client";
+import EsskayLogo from "@/components/ui/EsskayLogo";
 
 export default function Navbar() {
 
@@ -31,7 +32,7 @@ export default function Navbar() {
     const handleScroll = () => {
       setScrolled(window.scrollY > 50);
     };
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
@@ -48,16 +49,13 @@ export default function Navbar() {
   return (
     <header
       className={`fixed top-0 w-full z-50 transition-all duration-300 ${
-        scrolled ? "glass py-4" : "bg-transparent py-6"
+        scrolled ? "glass py-3" : "bg-transparent py-5"
       }`}
     >
       <div className="container mx-auto px-6 md:px-12 flex justify-between items-center">
-        {/* Logo */}
-        <Link href="/" className="flex items-center gap-2 group">
-          <Disc3 className="w-8 h-8 text-brand-primary group-hover:text-brand-accent transition-colors duration-300 animate-spin-slow" />
-          <span className="text-xl md:text-2xl font-bold tracking-widest uppercase">
-            Esskay<span className="text-gradient">tonality</span>
-          </span>
+        {/* Animated Logo */}
+        <Link href="/" className="flex items-center gap-0">
+          <EsskayLogo size={34} showText={true} />
         </Link>
 
         {/* Desktop Nav */}
@@ -66,7 +64,7 @@ export default function Navbar() {
             <Link
               key={link.name}
               href={link.href}
-              className="text-sm uppercase tracking-wider font-semibold text-brand-text/80 hover:text-white hover:text-brand-accent transition-colors"
+              className="text-sm uppercase tracking-wider font-semibold text-brand-text/80 hover:text-brand-accent transition-colors duration-200"
             >
               {link.name}
             </Link>
@@ -97,7 +95,7 @@ export default function Navbar() {
                 <Link href="/login" className="text-sm font-bold tracking-widest uppercase text-brand-text/80 hover:text-white transition-colors">
                   Log In
                 </Link>
-                <Link href="/register" className="px-5 py-2 rounded-full bg-brand-primary text-black text-sm font-bold tracking-widest uppercase hover:bg-white transition-colors shadow-[0_0_15px_rgba(0,255,255,0.2)]">
+                <Link href="/register" className="px-5 py-2 rounded-full bg-brand-primary text-white text-sm font-bold tracking-widest uppercase hover:bg-brand-accent transition-colors shadow-[0_0_15px_rgba(185,28,28,0.3)]">
                   Sign Up
                 </Link>
               </>
@@ -127,7 +125,7 @@ export default function Navbar() {
               key={link.name}
               href={link.href}
               onClick={() => setMobileMenuOpen(false)}
-              className="text-lg uppercase tracking-wider font-semibold text-brand-text/80 hover:text-white transition-colors"
+              className="text-lg uppercase tracking-wider font-semibold text-brand-text/80 hover:text-brand-accent transition-colors"
             >
               {link.name}
             </Link>
@@ -166,7 +164,7 @@ export default function Navbar() {
                 <Link 
                   href="/register" 
                   onClick={() => setMobileMenuOpen(false)}
-                  className="w-full py-3 rounded-full bg-brand-primary text-black text-center text-sm font-bold tracking-widest uppercase hover:bg-white transition-colors shadow-[0_0_15px_rgba(0,255,255,0.2)]"
+                  className="w-full py-3 rounded-full bg-brand-primary text-white text-center text-sm font-bold tracking-widest uppercase hover:bg-brand-accent transition-colors shadow-[0_0_15px_rgba(185,28,28,0.25)]"
                 >
                   Sign Up
                 </Link>
