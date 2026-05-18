@@ -6,6 +6,57 @@ import { Settings, Save, ArrowLeft, Image as ImageIcon, Loader2, CheckCircle2, P
 import Link from "next/link";
 import { motion } from "framer-motion";
 
+const defaultSlides = [
+  {
+    id: 1,
+    image: "https://img.youtube.com/vi/b-yMQjOqpHQ/maxresdefault.jpg",
+    title: "Qaid Qalandar",
+    youtubeId: "b-yMQjOqpHQ"
+  },
+  {
+    id: 2,
+    image: "https://img.youtube.com/vi/gCsv3X5ofhI/maxresdefault.jpg",
+    title: "Saiyaara OST",
+    youtubeId: "gCsv3X5ofhI"
+  },
+  {
+    id: 3,
+    image: "https://img.youtube.com/vi/QNmwgrqbYGA/maxresdefault.jpg",
+    title: "Tere Bina",
+    youtubeId: "QNmwgrqbYGA"
+  },
+  {
+    id: 4,
+    image: "https://img.youtube.com/vi/qxPGQLGpCmA/maxresdefault.jpg",
+    title: "Vigad Gayi Ae",
+    youtubeId: "qxPGQLGpCmA"
+  },
+  {
+    id: 5,
+    image: "https://img.youtube.com/vi/Vy7wwoI_Ofo/maxresdefault.jpg",
+    title: "Pehchaan",
+    youtubeId: "Vy7wwoI_Ofo"
+  },
+  {
+    id: 6,
+    image: "https://images.unsplash.com/photo-1520523839897-bd0b52f945a0?q=80&w=2070&auto=format&fit=crop",
+    title: "Poem",
+    youtubeId: "Md0x5Yp5QhM"
+  },
+  {
+    id: 7,
+    image: "https://images.unsplash.com/photo-1501386761578-eac5c94b800a?q=80&w=2070&auto=format&fit=crop",
+    title: "Apni Duniya",
+    youtubeId: "IyUsygCb8sU"
+  },
+  {
+    id: 8,
+    image: "https://images.unsplash.com/photo-1510915361894-db8b60106cb1?q=80&w=2070&auto=format&fit=crop",
+    title: "Amn (Peace)",
+    youtubeId: "jb3UqLcIDEQ"
+  }
+];
+
 export default function PlatformSettingsPage() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -21,8 +72,10 @@ export default function PlatformSettingsPage() {
 
   const fetchSettings = async () => {
     const { data, error } = await supabase.from("settings").select("*").eq("key", "hero_carousel").single();
-    if (data && data.value) {
+    if (data && data.value && data.value.length > 1) {
       setSlides(data.value);
+    } else {
+      setSlides(defaultSlides);
     }
   };
 
@@ -97,11 +150,24 @@ export default function PlatformSettingsPage() {
       )}
 
       <div className="glass p-8 rounded-3xl border border-white/10">
-        <div className="flex items-center justify-between mb-8 border-b border-white/10 pb-6">
+        <div className="flex flex-wrap items-center justify-between gap-4 mb-8 border-b border-white/10 pb-6">
           <h2 className="text-xl font-bold uppercase tracking-wider border-l-4 border-brand-accent pl-4">Homepage Carousel Slides</h2>
-          <button onClick={addSlide} className="text-xs font-bold uppercase tracking-widest px-4 py-2 bg-white/10 rounded-lg hover:bg-white/20 transition-colors">
-            + Add New Slide
-          </button>
+          <div className="flex items-center gap-3">
+            <button 
+              type="button"
+              onClick={() => setSlides(defaultSlides)} 
+              className="text-xs font-bold uppercase tracking-widest px-4 py-2 bg-red-500/10 border border-red-500/20 text-red-500 rounded-lg hover:bg-red-500/20 transition-colors"
+            >
+              Reset to 8 Default YouTube Releases
+            </button>
+            <button 
+              type="button"
+              onClick={addSlide} 
+              className="text-xs font-bold uppercase tracking-widest px-4 py-2 bg-white/10 rounded-lg hover:bg-white/20 transition-colors"
+            >
+              + Add New Slide
+            </button>
+          </div>
         </div>
 
         <div className="space-y-6">

@@ -73,8 +73,12 @@ export default function HeroCarousel() {
   useEffect(() => {
     const fetchSlides = async () => {
       const { data } = await supabase.from("settings").select("*").eq("key", "hero_carousel").single();
-      if (data && data.value && data.value.length > 0) {
+      // If we have custom slides from the database and there are more than 1 (meaning it's not the single dummy Saiyaara slide), use them.
+      // Otherwise, fall back to the 8 premium default slides (which have all of your YouTube releases!).
+      if (data && data.value && data.value.length > 1) {
         setSlides(data.value);
+      } else {
+        setSlides(defaultSlides);
       }
     };
     fetchSlides();
