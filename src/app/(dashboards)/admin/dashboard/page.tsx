@@ -1,7 +1,13 @@
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { Users, ShieldAlert, Music, Mic2, UploadCloud, Settings, Trash2, Mail } from "lucide-react";
+import { Users, ShieldAlert, Music, Mic2, UploadCloud, Settings, Mail, CheckCircle, Tags } from "lucide-react";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Admin Dashboard | ESSKAYTONALITY",
+  robots: { index: false, follow: false },
+};
 
 export default async function AdminDashboard() {
   const supabase = await createClient();
@@ -17,8 +23,8 @@ export default async function AdminDashboard() {
     .single();
 
   if (profile?.role !== "admin") {
-    // If they somehow guessed this URL but aren't an admin, kick them to their own dashboard
-    redirect(`/${profile?.role}/dashboard`);
+    const fallbackRole = profile?.role || "user";
+    redirect(`/${fallbackRole}/dashboard`);
   }
 
   // Fetch dynamic statistics from Supabase
@@ -36,6 +42,16 @@ export default async function AdminDashboard() {
     .from("releases")
     .select("*", { count: "exact", head: true });
 
+  const { count: pendingCount } = await supabase
+    .from("releases")
+    .select("*", { count: "exact", head: true })
+    .eq("status", "pending");
+
+  const { count: labelsCount } = await supabase
+    .from("labels")
+    .select("*", { count: "exact", head: true })
+    .eq("is_active", true);
+
   const { data: recentSignups } = await supabase
     .from("profiles")
     .select("*")
@@ -46,6 +62,7 @@ export default async function AdminDashboard() {
     { name: "Total Users", value: (usersCount || 0).toLocaleString(), icon: Users, color: "text-blue-500" },
     { name: "Total Artists", value: (artistsCount || 0).toLocaleString(), icon: Mic2, color: "text-purple-500" },
     { name: "Total Releases", value: (releasesCount || 0).toLocaleString(), icon: Music, color: "text-brand-primary" },
+    { name: "Pending Reviews", value: (pendingCount ?? 0).toLocaleString(), icon: CheckCircle, color: "text-yellow-500" },
   ];
 
   return (
@@ -53,24 +70,24 @@ export default async function AdminDashboard() {
       {/* Header Section */}
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-black uppercase tracking-tighter mb-1">
+          <h1 className="text-3xl font-bold uppercase tracking-tighter mb-1">
             Master <span className="text-gradient">Control</span>
           </h1>
-          <p className="text-brand-muted text-sm font-bold tracking-widest uppercase flex items-center gap-2">
+          <p className="text-brand-muted-dark text-sm font-bold tracking-widest uppercase flex items-center gap-2">
             <ShieldAlert className="w-4 h-4 text-brand-primary" /> Admin Privileges Active
           </p>
         </div>
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         {stats.map((stat) => (
-          <div key={stat.name} className="glass p-6 rounded-3xl border border-white/10 flex items-center justify-between">
+          <div key={stat.name} className="bg-brand-card p-6 rounded-xl border border-brand-border flex items-center justify-between">
             <div>
-              <p className="text-sm text-brand-muted font-bold tracking-wider uppercase mb-1">{stat.name}</p>
-              <p className="text-3xl font-black">{stat.value}</p>
+              <p className="text-sm text-brand-muted-dark font-bold tracking-wider uppercase mb-1">{stat.name}</p>
+              <p className="text-3xl font-bold">{stat.value}</p>
             </div>
-            <div className={`w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center ${stat.color}`}>
+            <div className={`w-14 h-14 rounded-xl bg-white/5 flex items-center justify-center ${stat.color}`}>
               <stat.icon className="w-7 h-7" />
             </div>
           </div>
@@ -79,49 +96,71 @@ export default async function AdminDashboard() {
 
       {/* Quick Actions */}
       <h2 className="text-xl font-bold uppercase tracking-wider mb-6 mt-12 border-l-4 border-brand-primary pl-4">Management Actions</h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-        <Link href="/admin/dashboard/upload" className="glass p-6 rounded-2xl border border-white/10 hover:border-brand-primary/50 cursor-pointer transition-colors group">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4">
+        <Link href="/admin/dashboard/upload" className="bg-brand-card p-6 rounded-xl border border-brand-border card-hover group">
           <UploadCloud className="w-8 h-8 text-white mb-4 group-hover:text-brand-primary transition-colors" />
           <h3 className="text-sm font-bold uppercase tracking-wider mb-2">Upload Release</h3>
-          <p className="text-xs text-brand-muted">Add new music to global platform</p>
+          <p className="text-xs text-brand-muted-dark">Add new music to global platform</p>
         </Link>
         
-        <Link href="/admin/dashboard/settings" className="glass p-6 rounded-2xl border border-white/10 hover:border-brand-primary/50 cursor-pointer transition-colors group">
+        <Link href="/admin/dashboard/settings" className="bg-brand-card p-6 rounded-xl border border-brand-border card-hover group">
           <Settings className="w-8 h-8 text-white mb-4 group-hover:text-brand-primary transition-colors" />
           <h3 className="text-sm font-bold uppercase tracking-wider mb-2">Platform Settings</h3>
-          <p className="text-xs text-brand-muted">Change homepage banners & SEO</p>
+          <p className="text-xs text-brand-muted-dark">Change homepage banners & SEO</p>
         </Link>
         
-        <Link href="/admin/dashboard/artists" className="glass p-6 rounded-2xl border border-white/10 hover:border-brand-primary/50 cursor-pointer transition-colors group">
+        <Link href="/admin/dashboard/artists" className="bg-brand-card p-6 rounded-xl border border-brand-border card-hover group">
           <Mic2 className="w-8 h-8 text-white mb-4 group-hover:text-brand-primary transition-colors" />
           <h3 className="text-sm font-bold uppercase tracking-wider mb-2">Manage Artists</h3>
-          <p className="text-xs text-brand-muted">Verify and approve new artists</p>
+          <p className="text-xs text-brand-muted-dark">Verify and approve new artists</p>
         </Link>
         
-        <Link href="/admin/dashboard/users" className="glass p-6 rounded-2xl border border-white/10 hover:border-brand-primary/50 cursor-pointer transition-colors group">
+        <Link href="/admin/dashboard/users" className="bg-brand-card p-6 rounded-xl border border-brand-border card-hover group">
           <Users className="w-8 h-8 text-white mb-4 group-hover:text-brand-primary transition-colors" />
           <h3 className="text-sm font-bold uppercase tracking-wider mb-2">Manage Users</h3>
-          <p className="text-xs text-brand-muted">View and suspend listeners</p>
+          <p className="text-xs text-brand-muted-dark">View and suspend listeners</p>
         </Link>
 
-        <Link href="/admin/dashboard/inquiries" className="glass p-6 rounded-2xl border border-white/10 hover:border-brand-primary/50 cursor-pointer transition-colors group">
+        <Link href="/admin/dashboard/reviews" className="bg-brand-card p-6 rounded-xl border border-brand-border card-hover group">
+          <CheckCircle className="w-8 h-8 text-white mb-4 group-hover:text-yellow-500 transition-colors" />
+          <h3 className="text-sm font-bold uppercase tracking-wider mb-2">Release Reviews</h3>
+          <p className="text-xs text-brand-muted-dark">Review & approve artist submissions</p>
+          {(pendingCount ?? 0) > 0 && (
+            <span className="mt-3 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-yellow-500/20 text-yellow-500">
+              {pendingCount ?? 0} pending
+            </span>
+          )}
+        </Link>
+
+        <Link href="/admin/dashboard/labels" className="bg-brand-card p-6 rounded-xl border border-brand-border card-hover group">
+          <Tags className="w-8 h-8 text-white mb-4 group-hover:text-brand-primary transition-colors" />
+          <h3 className="text-sm font-bold uppercase tracking-wider mb-2">Manage Labels</h3>
+          <p className="text-xs text-brand-muted-dark">Create and organize label divisions</p>
+          {(labelsCount ?? 0) > 0 && (
+            <span className="mt-3 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-brand-primary/20 text-brand-primary">
+              {labelsCount ?? 0} active
+            </span>
+          )}
+        </Link>
+
+        <Link href="/admin/dashboard/inquiries" className="bg-brand-card p-6 rounded-xl border border-brand-border card-hover group">
           <Mail className="w-8 h-8 text-white mb-4 group-hover:text-brand-primary transition-colors" />
           <h3 className="text-sm font-bold uppercase tracking-wider mb-2">View Inquiries</h3>
-          <p className="text-xs text-brand-muted">Read dynamic secure messages</p>
+          <p className="text-xs text-brand-muted-dark">Read dynamic secure messages</p>
         </Link>
       </div>
 
       {/* Recent Registrations Table */}
-      <div className="glass p-6 rounded-3xl border border-white/10 mt-12">
+      <div className="bg-brand-card p-6 rounded-xl border border-brand-border mt-12">
         <h3 className="text-lg font-bold uppercase tracking-wider mb-6">Recent Platform Signups</h3>
         <div className="overflow-x-auto">
           <table className="w-full text-left">
             <thead>
-              <tr className="border-b border-white/10 text-brand-muted text-xs uppercase tracking-widest">
-                <th className="pb-4 font-semibold">User</th>
-                <th className="pb-4 font-semibold">Role</th>
-                <th className="pb-4 font-semibold">Date Joined</th>
-                <th className="pb-4 font-semibold text-right">Actions</th>
+              <tr className="border-b border-brand-border text-xs font-medium text-brand-muted-dark uppercase tracking-wider">
+                <th className="pb-4 font-medium">User</th>
+                <th className="pb-4 font-medium">Role</th>
+                <th className="pb-4 font-medium">Date Joined</th>
+                <th className="pb-4 font-medium text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="text-sm">
@@ -135,7 +174,7 @@ export default async function AdminDashboard() {
                         </div>
                         <div>
                           <p className="font-bold">{signup.full_name || "New Listener"}</p>
-                          <p className="text-xs text-brand-muted">{signup.email || "No email"}</p>
+                          <p className="text-xs text-brand-muted-dark">{signup.email || "No email"}</p>
                         </div>
                       </div>
                     </td>
@@ -148,19 +187,19 @@ export default async function AdminDashboard() {
                         {signup.role}
                       </span>
                     </td>
-                    <td className="py-4 text-brand-muted">
+                    <td className="py-4 text-brand-muted-dark">
                       {new Date(signup.created_at).toLocaleDateString()}
                     </td>
                     <td className="py-4 text-right">
                       <Link href={`/admin/dashboard/${signup.role === "artist" ? "artists" : "users"}`} className="p-2 hover:bg-white/10 rounded-full transition-colors inline-block">
-                        <Settings className="w-4 h-4 text-brand-muted" />
+                        <Settings className="w-4 h-4 text-brand-muted-dark" />
                       </Link>
                     </td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan={4} className="py-8 text-center text-brand-muted">No signups found</td>
+                  <td colSpan={4} className="py-8 text-center text-brand-muted-dark">No signups found</td>
                 </tr>
               )}
             </tbody>
