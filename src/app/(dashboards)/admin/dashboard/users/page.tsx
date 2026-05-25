@@ -2,14 +2,21 @@
 
 import { useState, useEffect } from "react";
 import { createClient } from "@/utils/supabase/client";
-import { Users, ArrowLeft, Trash2 } from "lucide-react";
-import Link from "next/link";
+import { Users, Trash2 } from "lucide-react";
 import PageMeta from "@/components/seo/PageMeta";
 
 export default function ManageUsersPage() {
   const [users, setUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const supabase = createClient();
+
+  const roleBadgeClass = (role: string) => {
+    switch (role) {
+      case "admin": return "inline-block px-2 py-0.5 rounded-full text-[10px] font-bold uppercase bg-brand-primary/20 text-brand-primary";
+      case "artist": return "inline-block px-2 py-0.5 rounded-full text-[10px] font-bold uppercase bg-purple-500/20 text-purple-500";
+      default: return "inline-block px-2 py-0.5 rounded-full text-[10px] font-bold uppercase bg-blue-500/20 text-blue-500";
+    }
+  };
 
   useEffect(() => {
     fetchUsers();
@@ -20,7 +27,6 @@ export default function ManageUsersPage() {
     const { data } = await supabase
       .from("profiles")
       .select("*")
-      .eq("role", "user")
       .order("created_at", { ascending: false });
       
     if (data) setUsers(data);
@@ -45,10 +51,7 @@ export default function ManageUsersPage() {
 
   return (
     <div className="max-w-6xl mx-auto pt-8">
-      <PageMeta title="Manage Users" description="Admin — manage ESSKAYTONALITY listeners." noIndex />
-      <Link href="/admin/dashboard" className="flex items-center text-xs font-bold uppercase tracking-widest text-brand-muted-dark hover:text-white transition-colors mb-8 w-fit">
-        <ArrowLeft className="w-4 h-4 mr-2" /> Back to Master Control
-      </Link>
+      <PageMeta title="Manage Users" description="Admin dashboard - manage ESSKAYTONALITY users." noIndex />
 
       <div className="mb-10 flex items-center gap-4">
         <div className="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center">
@@ -56,9 +59,9 @@ export default function ManageUsersPage() {
         </div>
         <div>
           <h1 className="text-3xl font-bold uppercase tracking-tighter mb-1">
-            Manage <span className="text-blue-500">Listeners</span>
+            Manage <span className="text-blue-500">Users</span>
           </h1>
-          <p className="text-brand-muted-dark text-sm">View and manage all regular user accounts on the platform.</p>
+          <p className="text-brand-muted-dark text-sm">View and manage all users, artists, and admins on the platform.</p>
         </div>
       </div>
 
@@ -70,6 +73,7 @@ export default function ManageUsersPage() {
                 <th className="p-6 text-xs font-medium text-brand-muted-dark uppercase tracking-wider">User ID</th>
                 <th className="p-6 text-xs font-medium text-brand-muted-dark uppercase tracking-wider">Name</th>
                 <th className="p-6 text-xs font-medium text-brand-muted-dark uppercase tracking-wider">Email</th>
+                <th className="p-6 text-xs font-medium text-brand-muted-dark uppercase tracking-wider">Role</th>
                 <th className="p-6 text-xs font-medium text-brand-muted-dark uppercase tracking-wider">Joined</th>
                 <th className="p-6 text-xs font-medium text-brand-muted-dark uppercase tracking-wider text-right">Actions</th>
               </tr>
@@ -77,11 +81,11 @@ export default function ManageUsersPage() {
             <tbody className="divide-y divide-white/5">
               {loading ? (
                 <tr>
-                  <td colSpan={5} className="p-12 text-center text-brand-muted-dark">Loading listeners...</td>
+                  <td colSpan={6} className="p-12 text-center text-brand-muted-dark">Loading listeners...</td>
                 </tr>
-              ) : users.length === 0 ? (
+                ) : users.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="p-12 text-center text-brand-muted-dark">No listeners found.</td>
+                  <td colSpan={6} className="p-12 text-center text-brand-muted-dark">No listeners found.</td>
                 </tr>
               ) : (
                 users.map((user) => (
@@ -89,6 +93,9 @@ export default function ManageUsersPage() {
                     <td className="p-6 text-xs text-brand-muted-dark font-mono">{user.id.substring(0, 8)}...</td>
                     <td className="p-6 text-sm font-bold">{user.full_name || "Unknown User"}</td>
                     <td className="p-6 text-sm text-brand-muted-dark">{user.email || "No email"}</td>
+                    <td className="p-6 text-sm">
+                      <span className={roleBadgeClass(user.role)}>{user.role || "user"}</span>
+                    </td>
                     <td className="p-6 text-sm text-brand-muted-dark">
                       {new Date(user.created_at).toLocaleDateString()}
                     </td>

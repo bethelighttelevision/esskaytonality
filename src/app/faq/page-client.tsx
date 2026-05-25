@@ -6,90 +6,44 @@ import { useState } from "react";
 import JsonLd from "@/components/seo/JsonLd";
 import Link from "next/link";
 
-const faqData = [
-  {
-    category: "General",
-    items: [
-      {
-        q: "What is Esskaytonality?",
-        a: "Esskaytonality is an independent record label and music entertainment platform founded by Sahir Alam. We specialize in indie pop, cinematic music, and promoting both established and emerging artists across multiple genres.",
-      },
-      {
-        q: "Who owns Esskaytonality?",
-        a: "Esskaytonality is owned and operated by founder Sahir Alam, who also performs under the stage name Esskay Tonality.",
-      },
-      {
-        q: "Where is Esskaytonality based?",
-        a: "Our headquarters is located in Rotterdam, Netherlands, with a global digital presence serving audiences worldwide.",
-      },
-      {
-        q: "How can I contact Esskaytonality?",
-        a: "Visit our Contact page or email us through the form on the site. For business inquiries, please use the contact form with appropriate subject.",
-      },
-    ],
-  },
-  {
-    category: "For Artists",
-    items: [
-      {
-        q: "How do I submit my demo?",
-        a: "Esskaytonality currently accepts demo submissions through our contact form. Please include links to your music (SoundCloud, YouTube, Spotify) and a brief bio.",
-      },
-      {
-        q: "Does Esskaytonality offer contracts to new artists?",
-        a: "We evaluate each submission on its artistic merit. We never ask for payment to review demos or offer contracts. Beware of scams.",
-      },
-      {
-        q: "Can I collaborate with Esskaytonality artists?",
-        a: "Collaboration opportunities are evaluated on a case-by-case basis. Reach out through our contact form with your proposal.",
-      },
-      {
-        q: "How are royalties handled?",
-        a: "Royalty distribution follows standard industry practices. Specific terms are outlined in individual artist agreements.",
-      },
-    ],
-  },
-  {
-    category: "Audience & Fans",
-    items: [
-      {
-        q: "How can I listen to Esskaytonality music?",
-        a: "All our releases are available on major streaming platforms including Spotify, Apple Music, YouTube, and Deezer. Visit our Music page for direct links.",
-      },
-      {
-        q: "Can I use Esskaytonality music in my content?",
-        a: "For licensing inquiries, please contact us through the form on our Contact page with details about your project.",
-      },
-      {
-        q: "How can I stay updated on new releases?",
-        a: "Follow us on social media and check our News page for the latest updates, releases, and announcements.",
-      },
-      {
-        q: "Is there a fan club or newsletter?",
-        a: "Sign up on our website to receive updates about new music, exclusive content, and upcoming events.",
-      },
-    ],
-  },
-  {
-    category: "Technical",
-    items: [
-      {
-        q: "Why can't I play a song on the website?",
-        a: "Make sure your browser supports audio playback. Try refreshing the page or clearing your cache. If issues persist, contact us through the Contact page.",
-      },
-      {
-        q: "How do I create an account?",
-        a: 'Click "Sign Up" on the top right of the page. You can register with email or use Google OAuth for quick access.',
-      },
-      {
-        q: "I forgot my password, what do I do?",
-        a: "Go to the Login page and click 'Forgot Password.' Enter your email address and follow the reset link sent to your inbox.",
-      },
-    ],
-  },
-];
-
-export default function FAQPage() {
+export default function FAQPage({ initialFaq }: { initialFaq: { category: string; items: { q: string; a: string }[] }[] | null }) {
+  const faqData = initialFaq || [
+    {
+      category: "General",
+      items: [
+        { q: "What is Esskaytonality?", a: "Esskaytonality is an independent record label and music entertainment platform founded by Sahir Alam. We specialize in indie pop, cinematic music, and promoting both established and emerging artists across multiple genres." },
+        { q: "Who owns Esskaytonality?", a: "Esskaytonality is owned and operated by founder Sahir Alam, who also performs under the stage name Esskay Tonality." },
+        { q: "Where is Esskaytonality based?", a: "Our headquarters is located in Overijssel, Netherlands." },
+        { q: "How can I contact Esskaytonality?", a: "Visit our Contact page or email us through the form on the site. For business inquiries, please use the contact form with appropriate subject." },
+      ],
+    },
+    {
+      category: "For Artists",
+      items: [
+        { q: "How do I submit my demo?", a: "Esskaytonality currently accepts demo submissions through our contact form. Please include links to your music (SoundCloud, YouTube, Spotify) and a brief bio." },
+        { q: "Does Esskaytonality offer contracts to new artists?", a: "We evaluate each submission on its artistic merit. We never ask for payment to review demos or offer contracts. Beware of scams." },
+        { q: "Can I collaborate with Esskaytonality artists?", a: "Collaboration opportunities are evaluated on a case-by-case basis. Reach out through our contact form with your proposal." },
+        { q: "How are royalties handled?", a: "Royalty distribution follows standard industry practices. Specific terms are outlined in individual artist agreements." },
+      ],
+    },
+    {
+      category: "Audience & Fans",
+      items: [
+        { q: "How can I listen to Esskaytonality music?", a: "All our releases are available on major streaming platforms including Spotify, Apple Music, YouTube, and Deezer. Visit our Music page for direct links." },
+        { q: "Can I use Esskaytonality music in my content?", a: "For licensing inquiries, please contact us through the form on our Contact page with details about your project." },
+        { q: "How can I stay updated on new releases?", a: "Follow us on social media and check our News page for the latest updates, releases, and announcements." },
+        { q: "Is there a fan club or newsletter?", a: "Sign up on our website to receive updates about new music, exclusive content, and upcoming events." },
+      ],
+    },
+    {
+      category: "Technical",
+      items: [
+        { q: "Why can't I play a song on the website?", a: "Make sure your browser supports audio playback. Try refreshing the page or clearing your cache. If issues persist, contact us through the Contact page." },
+        { q: "How do I create an account?", a: 'Click "Sign Up" on the top right of the page. You can register with email or use Google OAuth for quick access.' },
+        { q: "I forgot my password, what do I do?", a: "Go to the Login page and click 'Forgot Password.' Enter your email address and follow the reset link sent to your inbox." },
+      ],
+    },
+  ];
   const [openItems, setOpenItems] = useState<Record<string, boolean>>({});
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -114,7 +68,7 @@ export default function FAQPage() {
         "@context": "https://schema.org",
         "@type": "FAQPage",
         mainEntity: [
-          { "@type": "Question", name: "What is ESSKAYTONALITY?", acceptedAnswer: { "@type": "Answer", text: "ESSKAYTONALITY is a global music entertainment platform and digital record label founded by Sahir Alam, based in Rotterdam, Netherlands." } },
+          { "@type": "Question", name: "What is ESSKAYTONALITY?", acceptedAnswer: { "@type": "Answer", text: "ESSKAYTONALITY is a global music entertainment platform and digital record label founded by Sahir Alam, based in Overijssel, Netherlands." } },
           { "@type": "Question", name: "How do I submit my music?", acceptedAnswer: { "@type": "Answer", text: "Sign up as an artist and use the Artist Dashboard to upload your tracks for review by our team." } },
           { "@type": "Question", name: "Is ESSKAYTONALITY free to join?", acceptedAnswer: { "@type": "Answer", text: "Yes, signing up and streaming music on ESSKAYTONALITY is completely free." } },
         ],

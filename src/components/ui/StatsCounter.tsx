@@ -5,18 +5,16 @@ import { motion, useInView } from "framer-motion";
 import { Music, Disc3, Headphones, Globe } from "lucide-react";
 
 const stats = [
-  { label: "Songs Released", value: 100, suffix: "+", icon: Music },
-  { label: "Artists Signed", value: 50, suffix: "+", icon: Disc3 },
-  { label: "Total Streams", value: 5, suffix: "M+", icon: Headphones, multiplier: 1000000 },
-  { label: "Countries", value: 30, suffix: "+", icon: Globe },
+  { label: "Songs", value: 20, suffix: "+", icon: Music },
+  { label: "Featured Artists", value: 50, suffix: "+", icon: Disc3 },
+  { label: "Streams", value: 200, suffix: "k+", icon: Headphones },
+  { label: "Countries", value: 192, suffix: "+", icon: Globe },
 ];
 
-function Counter({ value, suffix, multiplier }: { value: number; suffix: string; multiplier?: number }) {
+function Counter({ value, suffix }: { value: number; suffix: string }) {
   const [count, setCount] = useState(0);
   const ref = useRef<HTMLSpanElement>(null);
   const inView = useInView(ref, { once: true });
-  const target = multiplier ? value * (multiplier / value) : value;
-  const actualTarget = multiplier ? value * (multiplier / 1000000) : value;
 
   useEffect(() => {
     if (!inView) return;
@@ -40,7 +38,7 @@ function Counter({ value, suffix, multiplier }: { value: number; suffix: string;
 
   return (
     <span ref={ref} className="tabular-nums">
-      {multiplier ? `${count}${suffix}` : `${count}${suffix}`}
+      {count}{suffix}
     </span>
   );
 }
@@ -63,7 +61,7 @@ export default function StatsCounter() {
                 <stat.icon className="w-5 h-5 text-brand-primary" />
               </div>
               <div className="text-3xl md:text-4xl font-bold text-white mb-1">
-                <Counter value={stat.value} suffix={stat.suffix} multiplier={stat.multiplier} />
+                <Counter value={stat.value} suffix={stat.suffix} />
               </div>
               <p className="text-sm text-brand-muted-dark uppercase tracking-wider">{stat.label}</p>
             </motion.div>

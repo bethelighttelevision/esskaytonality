@@ -2,8 +2,7 @@
 
 import { useState } from "react";
 import { createClient } from "@/utils/supabase/client";
-import { UploadCloud, Music, Image as ImageIcon, ArrowLeft, Loader2, CheckCircle2 } from "lucide-react";
-import Link from "next/link";
+import { UploadCloud, Music, Image as ImageIcon, Loader2, CheckCircle2 } from "lucide-react";
 import PageMeta from "@/components/seo/PageMeta";
 import { motion } from "framer-motion";
 
@@ -84,9 +83,6 @@ export default function UploadReleasePage() {
   return (
     <div className="max-w-4xl mx-auto pt-8">
       <PageMeta title="Upload Release" description="Admin — upload a new release." noIndex />
-      <Link href="/admin/dashboard" className="flex items-center text-xs font-bold uppercase tracking-widest text-brand-muted-dark hover:text-white transition-colors mb-8 w-fit">
-        <ArrowLeft className="w-4 h-4 mr-2" /> Back to Master Control
-      </Link>
 
       <div className="mb-10">
         <h1 className="text-3xl font-bold uppercase tracking-tighter mb-2">

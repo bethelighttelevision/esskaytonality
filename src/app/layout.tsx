@@ -83,6 +83,7 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-full flex flex-col bg-brand-bg text-brand-text">
+        <style>{`div[hidden]#S\\:0{display:block!important}`}</style>
         <ClientAnimations />
         <div className="relative z-10 flex flex-col min-h-full">
           <Navbar />

@@ -29,10 +29,6 @@ export default function PrivacyPolicyPage() {
       content: "We retain your personal information for as long as your account is active or as needed to provide services. You may request deletion of your data by contacting us.",
     },
     {
-      title: "Your Rights",
-      content: "You have the right to access, correct, or delete your personal data. You may also object to or restrict certain processing. To exercise these rights, contact us at contact@esskaytonality.com.",
-    },
-    {
       title: "Security",
       content: "We implement appropriate technical and organizational measures to protect your data, including encryption in transit and at rest, access controls, and regular security reviews.",
     },

@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Mail } from "lucide-react";
 import EsskayLogo from "@/components/ui/EsskayLogo";
 
@@ -24,6 +27,11 @@ const YoutubeIcon = (props: React.SVGProps<SVGSVGElement>) => (
 );
 
 export default function Footer() {
+  const pathname = usePathname();
+  const isDashboard = pathname.startsWith("/admin/dashboard") || pathname.startsWith("/artist/dashboard") || pathname.startsWith("/user/dashboard");
+
+  if (isDashboard) return null;
+
   return (
     <footer className="bg-brand-surface border-t border-brand-border mt-24">
       <div className="container mx-auto px-6 md:px-12 py-12">
@@ -47,9 +55,10 @@ export default function Footer() {
             <h4 className="text-white text-sm font-semibold mb-4">Discover</h4>
             <ul className="space-y-2.5">
               <li><Link href="/artists" className="text-sm text-brand-muted-dark hover:text-white transition-colors">Artists</Link></li>
+              <li><Link href="/signed-artists" className="text-sm text-brand-muted-dark hover:text-white transition-colors">Signed Artists</Link></li>
               <li><Link href="/music" className="text-sm text-brand-muted-dark hover:text-white transition-colors">New Releases</Link></li>
               <li><Link href="/videos" className="text-sm text-brand-muted-dark hover:text-white transition-colors">Videos</Link></li>
-              <li><Link href="/news" className="text-sm text-brand-muted-dark hover:text-white transition-colors">News & Media</Link></li>
+              <li><Link href="/team" className="text-sm text-brand-muted-dark hover:text-white transition-colors">Our Team</Link></li>
             </ul>
           </div>
 

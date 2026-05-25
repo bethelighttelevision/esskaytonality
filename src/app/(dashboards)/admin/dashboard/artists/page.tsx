@@ -2,9 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { createClient } from "@/utils/supabase/client";
-import { Plus, Pencil, Trash2, X, Save, Loader2, ArrowLeft, Mic2, CheckCircle2, Edit2 } from "lucide-react";
+import { Plus, Trash2, X, Loader2, Mic2, CheckCircle2, Edit2 } from "lucide-react";
 import Link from "next/link";
 import PageMeta from "@/components/seo/PageMeta";
+import FileUpload from "@/components/admin/FileUpload";
 
 const defaultArtists = [
   {
@@ -87,19 +88,27 @@ export default function ManageArtistsPage() {
 
   const fetchArtists = async () => {
     setLoading(true);
-    const { data } = await supabase
-      .from("settings")
-      .select("value")
-      .eq("key", "artists_data")
-      .single();
-
-    if (data && data.value) {
-      setArtists(data.value);
-    } else {
-      setArtists(defaultArtists);
-      await supabase
+    try {
+      const { data, error } = await supabase
         .from("settings")
-        .upsert({ key: "artists_data", value: defaultArtists });
+        .select("value")
+        .eq("key", "artists_data")
+        .single();
+
+      if (error && error.code === "PGRST116") {
+        setArtists(defaultArtists);
+        await supabase
+          .from("settings")
+          .upsert({ key: "artists_data", value: defaultArtists });
+      } else if (error) {
+        setArtists(defaultArtists);
+      } else if (data && data.value) {
+        setArtists(data.value);
+      } else {
+        setArtists(defaultArtists);
+      }
+    } catch {
+      setArtists(defaultArtists);
     }
     setLoading(false);
   };
@@ -261,9 +270,6 @@ export default function ManageArtistsPage() {
   return (
     <div className="max-w-6xl mx-auto pt-8 px-4 md:px-0">
       <PageMeta title="Manage Artists" description="Admin — manage ESSKAYTONALITY artist roster." noIndex />
-      <Link href="/admin/dashboard" className="flex items-center text-xs font-bold uppercase tracking-widest text-brand-muted-dark hover:text-white transition-colors mb-8 w-fit">
-        <ArrowLeft className="w-4 h-4 mr-2" /> Back to Master Control
-      </Link>
 
       <div className="mb-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div className="flex items-center gap-4">
@@ -396,23 +402,35 @@ export default function ManageArtistsPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted-dark mb-2">Profile Avatar Image URL</label>
-                  <input 
+                  <FileUpload
+                    bucket="artist-images"
+                    label="Profile Avatar"
+                    currentUrl={formData.profile}
+                    onUpload={(url) => setFormData({ ...formData, profile: url })}
+                    onClear={() => setFormData({ ...formData, profile: "" })}
+                  />
+                  <input
                     type="text"
                     value={formData.profile}
                     onChange={(e) => setFormData({ ...formData, profile: e.target.value })}
-                    placeholder="https://images.unsplash.com/..."
-                    className="w-full bg-brand-bg border border-brand-border rounded-lg px-4 py-3 text-white focus:outline-none focus:border-brand-primary"
+                    placeholder="Or paste image URL..."
+                    className="w-full mt-2 bg-brand-bg border border-brand-border rounded-lg px-3 py-2 text-xs text-white placeholder:text-white/20 focus:outline-none focus:border-brand-primary"
                   />
                 </div>
                 <div className="md:col-span-2">
-                  <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted-dark mb-2">Hero Profile Banner Image URL</label>
-                  <input 
+                  <FileUpload
+                    bucket="artist-images"
+                    label="Hero Profile Banner"
+                    currentUrl={formData.banner}
+                    onUpload={(url) => setFormData({ ...formData, banner: url })}
+                    onClear={() => setFormData({ ...formData, banner: "" })}
+                  />
+                  <input
                     type="text"
                     value={formData.banner}
                     onChange={(e) => setFormData({ ...formData, banner: e.target.value })}
-                    placeholder="https://images.unsplash.com/..."
-                    className="w-full bg-brand-bg border border-brand-border rounded-lg px-4 py-3 text-white focus:outline-none focus:border-brand-primary"
+                    placeholder="Or paste banner URL..."
+                    className="w-full mt-2 bg-brand-bg border border-brand-border rounded-lg px-3 py-2 text-xs text-white placeholder:text-white/20 focus:outline-none focus:border-brand-primary"
                   />
                 </div>
                 <div className="md:col-span-2">

@@ -1,9 +1,7 @@
 "use client";
 
-import dynamic from "next/dynamic";
-
-const SiteAnimations = dynamic(() => import("./SiteAnimations"), { ssr: false });
-const PwaRegister = dynamic(() => import("./PwaRegister"), { ssr: false });
+import SiteAnimations from "./SiteAnimations";
+import PwaRegister from "./PwaRegister";
 
 export default function ClientAnimations() {
   return (

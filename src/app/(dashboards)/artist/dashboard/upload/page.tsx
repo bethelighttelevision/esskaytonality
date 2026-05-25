@@ -2,25 +2,30 @@
 
 import { useState, useEffect } from "react";
 import { createClient } from "@/utils/supabase/client";
-import { UploadCloud, Music, Image as ImageIcon, ArrowLeft, Loader2, CheckCircle2 } from "lucide-react";
-import Link from "next/link";
+import { UploadCloud, Music, Image as ImageIcon, Loader2, CheckCircle2 } from "lucide-react";
 import PageMeta from "@/components/seo/PageMeta";
 import { motion } from "framer-motion";
+import PolicyModal from "@/components/artist/PolicyModal";
 
 export default function ArtistUploadPage() {
   const [title, setTitle] = useState("");
   const [artistName, setArtistName] = useState("");
   const [genre, setGenre] = useState("");
-  
+
   const [audioFile, setAudioFile] = useState<File | null>(null);
   const [coverFile, setCoverFile] = useState<File | null>(null);
   const [youtubeVideoFile, setYoutubeVideoFile] = useState<File | null>(null);
-  
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
-  
+
+  const [showPolicy, setShowPolicy] = useState(false);
+  const [policyVersion, setPolicyVersion] = useState("v1");
+
   const supabase = createClient();
+
+  const [validationErrors, setValidationErrors] = useState<string[]>([]);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -35,13 +40,65 @@ export default function ArtistUploadPage() {
     fetchProfile();
   }, []);
 
-  const handleUpload = async (e: React.FormEvent) => {
+  const validateFiles = async (): Promise<string[]> => {
+    const errors: string[] = [];
+
+    // Audio validation: must be WAV
+    if (audioFile) {
+      const ext = audioFile.name.split('.').pop()?.toLowerCase();
+      if (ext !== "wav") {
+        errors.push("Audio format has to be WAV 48.000Hz/24bits");
+      }
+    }
+
+    // Cover art validation: must be 3000 x 3000 px
+    if (coverFile) {
+      try {
+        const img = new Image();
+        const url = URL.createObjectURL(coverFile);
+        const dimensions = await new Promise<{ w: number; h: number }>((resolve, reject) => {
+          img.onload = () => {
+            URL.revokeObjectURL(url);
+            resolve({ w: img.naturalWidth, h: img.naturalHeight });
+          };
+          img.onerror = () => {
+            URL.revokeObjectURL(url);
+            reject(new Error("Failed to load image"));
+          };
+          img.src = url;
+        });
+        if (dimensions.w !== 3000 || dimensions.h !== 3000) {
+          errors.push(`Cover Art has to be 3000 x 3000 px (uploaded: ${dimensions.w} x ${dimensions.h} px)`);
+        }
+      } catch {
+        errors.push("Could not validate cover art dimensions. Please upload a valid image.");
+      }
+    }
+
+    return errors;
+  };
+
+  const handleSubmitClick = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!audioFile || !coverFile) {
       setError("Please select both an audio file and a cover image.");
       return;
     }
+    setError(null);
+    setValidationErrors([]);
 
+    const errors = await validateFiles();
+    if (errors.length > 0) {
+      setValidationErrors(errors);
+      return;
+    }
+
+    setShowPolicy(true);
+  };
+
+  const handlePolicyAccept = async (version: string) => {
+    setShowPolicy(false);
+    setPolicyVersion(version);
     setLoading(true);
     setError(null);
     setSuccess(false);
@@ -50,23 +107,20 @@ export default function ArtistUploadPage() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
 
-      // 1. Upload Cover Image
-      const coverFileName = `${Date.now()}-${coverFile.name.replace(/\s+/g, '-')}`;
+      const coverFileName = `${Date.now()}-${coverFile!.name.replace(/\s+/g, '-')}`;
       const { error: coverError } = await supabase.storage
         .from("releases")
-        .upload(`covers/${coverFileName}`, coverFile);
-        
+        .upload(`covers/${coverFileName}`, coverFile!);
+
       if (coverError) throw new Error("Failed to upload cover art: " + coverError.message);
 
-      // 2. Upload Audio MP3
-      const audioFileName = `${Date.now()}-${audioFile.name.replace(/\s+/g, '-')}`;
+      const audioFileName = `${Date.now()}-${audioFile!.name.replace(/\s+/g, '-')}`;
       const { error: audioError } = await supabase.storage
         .from("releases")
-        .upload(`audio/${audioFileName}`, audioFile);
+        .upload(`audio/${audioFileName}`, audioFile!);
 
       if (audioError) throw new Error("Failed to upload audio file: " + audioError.message);
 
-      // 3. Upload YouTube Video (optional)
       if (youtubeVideoFile) {
         const videoFileName = `${Date.now()}-${youtubeVideoFile.name.replace(/\s+/g, '-')}`;
         const { error: videoError } = await supabase.storage
@@ -76,11 +130,9 @@ export default function ArtistUploadPage() {
         if (videoError) throw new Error("Failed to upload video file: " + videoError.message);
       }
 
-      // 4. Get Public URLs
       const coverUrl = supabase.storage.from("releases").getPublicUrl(`covers/${coverFileName}`).data.publicUrl;
       const audioUrl = supabase.storage.from("releases").getPublicUrl(`audio/${audioFileName}`).data.publicUrl;
 
-      // 5. Save metadata with pending status
       const { error: dbError } = await supabase
         .from("releases")
         .insert({
@@ -90,21 +142,21 @@ export default function ArtistUploadPage() {
           cover_image_url: coverUrl,
           audio_url: audioUrl,
           uploaded_by: user.id,
-          status: "pending"
+          status: "pending",
+          policy_accepted: true,
+          policy_accepted_at: new Date().toISOString(),
+          policy_version: version,
         });
 
       if (dbError) throw new Error("Database error: " + dbError.message);
 
-      // 6. Send email notification (optional, catch errors silently)
       try {
         await fetch("/api/notify-submission", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ title, artistName, genre }),
         });
-      } catch (emailErr) {
-        console.error("Failed to send submission notification:", emailErr);
-      }
+      } catch {}
 
       setSuccess(true);
       setTitle("");
@@ -112,7 +164,7 @@ export default function ArtistUploadPage() {
       setAudioFile(null);
       setCoverFile(null);
       setYoutubeVideoFile(null);
-      
+
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -120,12 +172,13 @@ export default function ArtistUploadPage() {
     }
   };
 
+  const handlePolicyDeny = () => {
+    setShowPolicy(false);
+  };
+
   return (
-    <div className="max-w-4xl mx-auto pt-8">
+    <div className="max-w-4xl mx-auto pt-24">
       <PageMeta title="Upload Release" description="Submit your music for review on ESSKAYTONALITY." noIndex />
-      <Link href="/artist/dashboard" className="flex items-center text-xs font-bold uppercase tracking-widest text-brand-muted-dark hover:text-white transition-colors mb-8 w-fit">
-        <ArrowLeft className="w-4 h-4 mr-2" /> Back to Artist Dashboard
-      </Link>
 
       <div className="mb-10">
         <h1 className="text-3xl font-bold uppercase tracking-tighter mb-2">
@@ -150,13 +203,20 @@ export default function ArtistUploadPage() {
         </div>
       )}
 
-      <form onSubmit={handleUpload} className="space-y-8">
+      {validationErrors.length > 0 && (
+        <div className="mb-8 p-4 bg-red-500/10 border border-red-500/50 rounded-xl space-y-2">
+          {validationErrors.map((msg, i) => (
+            <p key={i} className="text-red-500 text-sm font-medium">{msg}</p>
+          ))}
+        </div>
+      )}
+
+      <form onSubmit={handleSubmitClick} className="space-y-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Audio Upload */}
           <div className="bg-brand-card p-8 rounded-xl border border-brand-border flex flex-col items-center justify-center text-center relative overflow-hidden group">
-            <input 
-              type="file" 
-              accept="audio/mp3,audio/wav" 
+            <input
+              type="file"
+              accept="audio/wav,.wav"
               required
               onChange={(e) => setAudioFile(e.target.files?.[0] || null)}
               className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
@@ -166,15 +226,14 @@ export default function ArtistUploadPage() {
             </div>
             <h2 className="text-lg font-bold uppercase tracking-wider mb-2">Audio File</h2>
             <p className="text-xs text-brand-muted-dark max-w-[200px]">
-              {audioFile ? <span className="text-white font-bold">{audioFile.name}</span> : "Upload MP3 or WAV."}
+              {audioFile ? <span className="text-white font-bold">{audioFile.name}</span> : "WAV 48.000Hz / 24bits only."}
             </p>
           </div>
 
-          {/* Cover Art Upload */}
           <div className="bg-brand-card p-8 rounded-xl border border-brand-border flex flex-col items-center justify-center text-center relative overflow-hidden group">
-            <input 
-              type="file" 
-              accept="image/jpeg,image/png,image/webp" 
+            <input
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
               required
               onChange={(e) => setCoverFile(e.target.files?.[0] || null)}
               className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
@@ -184,12 +243,11 @@ export default function ArtistUploadPage() {
             </div>
             <h2 className="text-lg font-bold uppercase tracking-wider mb-2">Cover Art</h2>
             <p className="text-xs text-brand-muted-dark max-w-[200px]">
-              {coverFile ? <span className="text-white font-bold">{coverFile.name}</span> : "Upload JPG, PNG."}
+              {coverFile ? <span className="text-white font-bold">{coverFile.name}</span> : "3000 x 3000 px only."}
             </p>
           </div>
         </div>
 
-        {/* YouTube Video Upload */}
         <div className="bg-brand-card p-8 rounded-xl border border-brand-border flex flex-col items-center justify-center text-center relative overflow-hidden group">
           <input
             type="file"
@@ -208,7 +266,7 @@ export default function ArtistUploadPage() {
 
         <div className="bg-brand-card p-8 rounded-xl border border-brand-border space-y-6">
           <h2 className="text-xl font-bold uppercase tracking-wider border-l-4 border-brand-accent pl-4 mb-6">Track Metadata</h2>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label className="block text-xs font-bold tracking-widest text-brand-muted-dark uppercase mb-2">Track Title</label>
@@ -228,7 +286,6 @@ export default function ArtistUploadPage() {
                 disabled
                 value={artistName}
                 className="w-full bg-brand-bg border border-brand-border rounded-lg px-4 py-3 text-white/50 cursor-not-allowed"
-                title="Your verified stage name cannot be changed here."
               />
             </div>
           </div>
@@ -257,8 +314,13 @@ export default function ArtistUploadPage() {
             <><UploadCloud className="w-5 h-5" /> Submit for Review</>
           )}
         </button>
-
       </form>
+
+      <PolicyModal
+        open={showPolicy}
+        onAccept={handlePolicyAccept}
+        onDeny={handlePolicyDeny}
+      />
     </div>
   );
 }

@@ -5,13 +5,15 @@ import { PlayCircle, MonitorPlay, Film, X } from "lucide-react";
 import { useState } from "react";
 import JsonLd from "@/components/seo/JsonLd";
 
-export default function VideosPage() {
+interface VideoData { title: string; category: string; image: string; duration: string; youtubeId: string; }
+
+export default function VideosPage({ initialVideos }: { initialVideos: { featured: VideoData | null; list: VideoData[] } | null }) {
   const [activeCategory, setActiveCategory] = useState("All");
   const [activeVideo, setActiveVideo] = useState<{ title: string; youtubeId: string } | null>(null);
 
-  const categories = ["All", "EssKay Tonality", "Music Videos", "Live Sessions", "Interviews", "Behind the Scenes"];
+  const categories = ["All", "EssKay Tonality", "Originals Songs Videos", "Covers Songs Videos", "Group Songs Videos", "Poetries", "Music", "Live Sessions", "Interviews", "Behind the Scenes"];
 
-  const featuredVideo = {
+  const featuredVideo = initialVideos?.featured || {
     title: "Qaid Qalandar | Sahir Alam | Oma Aslam | Dixon Wilson",
     category: "Featured Release",
     image: "https://img.youtube.com/vi/b-yMQjOqpHQ/maxresdefault.jpg",
@@ -19,7 +21,7 @@ export default function VideosPage() {
     youtubeId: "b-yMQjOqpHQ"
   };
 
-  const videos = [
+  const videos = initialVideos?.list || [
     { title: "Saiyaara (Extended Cover) Lyrical | Nasir Abbas | Sahir Alam | Faheem Abdullah | Saiyaara OST", category: "EssKay Tonality", image: "https://img.youtube.com/vi/gCsv3X5ofhI/maxresdefault.jpg", duration: "5:34", youtubeId: "gCsv3X5ofhI" },
     { title: "Tere Bina | Numan Khan | Sahir Alam | Sumble Noreen | Saher Khan", category: "EssKay Tonality", image: "https://img.youtube.com/vi/QNmwgrqbYGA/maxresdefault.jpg", duration: "4:12", youtubeId: "QNmwgrqbYGA" },
     { title: "Vigad Gayi Ae | Reprise Version | Arsalan Arshad | Sahir Alam | Ustad Nusrat Fateh Ali Khan", category: "EssKay Tonality", image: "https://img.youtube.com/vi/qxPGQLGpCmA/maxresdefault.jpg", duration: "3:58", youtubeId: "qxPGQLGpCmA" },
@@ -65,16 +67,16 @@ export default function VideosPage() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
-        className="flex overflow-x-auto gap-4 pb-4 mb-12 scrollbar-hide"
+        className="flex flex-wrap justify-center gap-2 mb-10"
       >
         {categories.map((category) => (
           <button
             key={category}
             onClick={() => setActiveCategory(category)}
-            className={`whitespace-nowrap rounded-lg px-5 py-2.5 text-sm font-bold uppercase tracking-wider transition-colors ${
+            className={`rounded-lg px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider transition-colors ${
               activeCategory === category 
-                ? "bg-brand-primary text-white" 
-                : "bg-brand-surface text-brand-muted-dark hover:text-white hover:bg-white/10"
+                ? "bg-brand-primary text-white shadow-lg shadow-brand-primary/25" 
+                : "bg-brand-surface/60 text-brand-muted-dark hover:text-white hover:bg-brand-surface"
             }`}
           >
             {category}

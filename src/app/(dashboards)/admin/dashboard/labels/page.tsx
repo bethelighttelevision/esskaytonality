@@ -3,11 +3,11 @@
 import { useState, useEffect } from "react";
 import { createClient } from "@/utils/supabase/client";
 import {
-  Plus, Pencil, Trash2, X, Save, Loader2, ArrowLeft,
-  Tags, Upload, Image as ImageIcon, Palette, Globe, Hash
+  Plus, Pencil, Trash2, X, Save, Loader2,
+  Tags, Palette
 } from "lucide-react";
-import Link from "next/link";
 import PageMeta from "@/components/seo/PageMeta";
+import FileUpload from "@/components/admin/FileUpload";
 import LabelLogo from "@/components/ui/LabelLogo";
 
 interface Label {
@@ -36,6 +36,7 @@ const emptyForm = {
   color: "#ffffff",
   founded_year: "" as string | number,
   website_url: "",
+  logo_url: "",
   cover_image_url: "",
   display_order: 0,
   is_active: true,
@@ -53,7 +54,6 @@ export default function AdminLabelsPage() {
   const [editing, setEditing] = useState<Label | null>(null);
   const [form, setForm] = useState({ ...emptyForm });
   const [saving, setSaving] = useState(false);
-  const [logoFile, setLogoFile] = useState<File | null>(null);
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
@@ -75,7 +75,6 @@ export default function AdminLabelsPage() {
   const openCreate = () => {
     setEditing(null);
     setForm({ ...emptyForm });
-    setLogoFile(null);
     setLogoPreview(null);
     setError(null);
     setShowModal(true);
@@ -92,23 +91,14 @@ export default function AdminLabelsPage() {
       color: label.color || "#ffffff",
       founded_year: label.founded_year || "",
       website_url: label.website_url || "",
+      logo_url: label.logo_url || "",
       cover_image_url: label.cover_image_url || "",
       display_order: label.display_order,
       is_active: label.is_active,
     });
-    setLogoFile(null);
     setLogoPreview(null);
     setError(null);
     setShowModal(true);
-  };
-
-  const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setLogoFile(file);
-    const reader = new FileReader();
-    reader.onload = (ev) => setLogoPreview(ev.target?.result as string);
-    reader.readAsDataURL(file);
   };
 
   const generateSlug = (name: string) => {
@@ -126,29 +116,12 @@ export default function AdminLabelsPage() {
     }));
   };
 
-  const uploadLogo = async (): Promise<string | null> => {
-    if (!logoFile) return editing?.logo_url || null;
-    const ext = logoFile.name.split(".").pop() || "png";
-    const fileName = `logo-${Date.now()}.${ext}`;
-    const { error: uploadErr } = await supabase.storage
-      .from("label-logos")
-      .upload(fileName, logoFile);
-    if (uploadErr) throw new Error("Failed to upload logo: " + uploadErr.message);
-    const { data: { publicUrl } } = supabase.storage
-      .from("label-logos")
-      .getPublicUrl(fileName);
-    return publicUrl;
-  };
-
   const handleSave = async () => {
     if (!form.name.trim()) { setError("Label name is required."); return; }
     if (!form.slug.trim()) { setError("Slug is required."); return; }
     setSaving(true);
     setError(null);
     try {
-      let logoUrl = editing?.logo_url || null;
-      if (logoFile) logoUrl = await uploadLogo();
-
       const payload = {
         name: form.name.trim(),
         slug: form.slug.trim(),
@@ -158,10 +131,10 @@ export default function AdminLabelsPage() {
         color: form.color || null,
         founded_year: form.founded_year ? Number(form.founded_year) : null,
         website_url: form.website_url.trim() || null,
+        logo_url: form.logo_url?.trim() || null,
         cover_image_url: form.cover_image_url.trim() || null,
         display_order: Number(form.display_order) || 0,
         is_active: form.is_active,
-        ...(logoUrl ? { logo_url: logoUrl } : {}),
       };
 
       if (editing) {
@@ -208,9 +181,6 @@ export default function AdminLabelsPage() {
           <p className="text-brand-muted-dark text-sm">Create and manage your record labels.</p>
         </div>
         <div className="flex items-center gap-3">
-          <Link href="/admin/dashboard" className="text-xs font-bold uppercase tracking-widest text-brand-muted-dark hover:text-white transition-colors flex items-center gap-1.5">
-            <ArrowLeft className="w-3.5 h-3.5" /> Back
-          </Link>
           <button onClick={openCreate} className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-brand-primary text-black text-sm font-medium hover:bg-brand-accent transition-colors">
             <Plus className="w-4 h-4" /> Add Label
           </button>
@@ -302,17 +272,22 @@ export default function AdminLabelsPage() {
               <div>
                 <label className="block text-xs font-bold tracking-widest text-brand-muted-dark uppercase mb-3">Label Logo</label>
                 <div className="flex items-center gap-6">
-                  <LabelLogo
-                    src={logoPreview || editing?.logo_url}
-                    name={form.name || "Preview"}
-                    color={form.color || "#fff"}
-                    size="lg"
+                  <FileUpload
+                    bucket="label-logos"
+                    label=""
+                    currentUrl={form.logo_url}
+                    onUpload={(url) => setForm(prev => ({ ...prev, logo_url: url }))}
+                    onClear={() => setForm(prev => ({ ...prev, logo_url: "" }))}
                   />
-                  <label className="cursor-pointer flex items-center gap-2 px-4 py-2.5 rounded-lg bg-brand-bg border border-brand-border hover:border-brand-primary/50 transition-colors text-sm text-brand-muted hover:text-white">
-                    <Upload className="w-4 h-4" />
-                    {logoFile ? logoFile.name : "Upload Logo"}
-                    <input type="file" accept="image/png,image/webp,image/svg+xml" onChange={handleLogoChange} className="hidden" />
-                  </label>
+                  <div className="flex-1">
+                    <input
+                      type="text"
+                      value={form.logo_url}
+                      onChange={(e) => setForm(prev => ({ ...prev, logo_url: e.target.value }))}
+                      placeholder="Or paste logo URL..."
+                      className="w-full bg-brand-bg border border-brand-border rounded-lg px-3 py-2 text-xs text-white placeholder:text-white/20 focus:outline-none focus:border-brand-primary/50 transition-all"
+                    />
+                  </div>
                 </div>
               </div>
 
@@ -363,6 +338,29 @@ export default function AdminLabelsPage() {
                   {defaultColors.map(c => (
                     <button key={c} onClick={() => setForm(prev => ({ ...prev, color: c }))} className="w-8 h-8 rounded-lg border border-brand-border hover:scale-110 transition-transform" style={{ backgroundColor: c }} />
                   ))}
+                </div>
+              </div>
+
+              {/* Cover Image */}
+              <div>
+                <label className="block text-xs font-bold tracking-widest text-brand-muted-dark uppercase mb-3">Cover Image</label>
+                <div className="flex items-center gap-6">
+                  <FileUpload
+                    bucket="label-logos"
+                    label=""
+                    currentUrl={form.cover_image_url}
+                    onUpload={(url) => setForm(prev => ({ ...prev, cover_image_url: url }))}
+                    onClear={() => setForm(prev => ({ ...prev, cover_image_url: "" }))}
+                  />
+                  <div className="flex-1">
+                    <input
+                      type="text"
+                      value={form.cover_image_url}
+                      onChange={(e) => setForm(prev => ({ ...prev, cover_image_url: e.target.value }))}
+                      placeholder="Or paste cover URL..."
+                      className="w-full bg-brand-bg border border-brand-border rounded-lg px-3 py-2 text-xs text-white placeholder:text-white/20 focus:outline-none focus:border-brand-primary/50 transition-all"
+                    />
+                  </div>
                 </div>
               </div>
 

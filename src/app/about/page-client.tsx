@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Target, Eye, Building2, MapPin, Mail, Phone, Globe, ArrowRight } from "lucide-react";
+import { Building2, MapPin, Mail, Phone, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import JsonLd from "@/components/seo/JsonLd";
 
@@ -100,43 +100,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Mission & Vision */}
-      <section className="bg-brand-surface py-24 border-y border-white/5 mb-32">
-        <div className="container mx-auto px-6 md:px-12">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-            <motion.div 
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="bg-brand-card border border-brand-border p-12 rounded-xl hover:border-brand-primary/30 transition-colors group"
-            >
-              <div className="w-16 h-16 rounded-full bg-brand-bg flex items-center justify-center mb-8 border border-white/10 group-hover:scale-110 transition-transform duration-500">
-                <Target className="w-8 h-8 text-brand-primary" />
-              </div>
-              <h3 className="text-3xl font-bold uppercase tracking-wider mb-6">Our Mission</h3>
-              <p className="text-brand-muted text-lg leading-relaxed">
-                To discover, cultivate, and amplify authentic voices globally. We are dedicated to providing artists with an innovative platform where their creative vision is protected and their sonic potential is maximized through cutting-edge production and strategic global distribution.
-              </p>
-            </motion.div>
 
-            <motion.div 
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.2 }}
-              className="bg-brand-card border border-brand-border p-12 rounded-xl hover:border-brand-accent/30 transition-colors group"
-            >
-              <div className="w-16 h-16 rounded-full bg-brand-bg flex items-center justify-center mb-8 border border-white/10 group-hover:scale-110 transition-transform duration-500">
-                <Eye className="w-8 h-8 text-brand-accent" />
-              </div>
-              <h3 className="text-3xl font-bold uppercase tracking-wider mb-6">Our Vision</h3>
-              <p className="text-brand-muted text-lg leading-relaxed">
-                To architect the future of the entertainment industry. We envision a borderless musical landscape where independent artistry thrives at the highest commercial levels, reshaping global culture and leaving a legacy of sonic excellence for generations to come.
-              </p>
-            </motion.div>
-          </div>
-        </div>
-      </section>
 
       {/* Founder Section */}
       <section className="container mx-auto px-6 md:px-12 mb-32">
@@ -182,7 +146,7 @@ export default function AboutPage() {
           <p className="text-brand-muted-dark">Where the magic happens.</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-2xl mx-auto">
           <motion.div 
             whileHover={{ y: -10 }}
             className="bg-brand-card border border-brand-border p-8 rounded-2xl flex flex-col items-center text-center"
@@ -192,8 +156,7 @@ export default function AboutPage() {
             </div>
             <h3 className="text-xl font-bold uppercase tracking-wider mb-4">Location</h3>
             <p className="text-brand-muted-dark">
-              Rotterdam, Netherlands<br />
-              (Worldwide Services)
+              Overijssel, Netherlands
             </p>
           </motion.div>
 
@@ -209,20 +172,7 @@ export default function AboutPage() {
             <p className="text-brand-muted-dark">+31 624 461 425</p>
           </motion.div>
 
-          <motion.div 
-            whileHover={{ y: -10 }}
-            className="bg-brand-card border border-brand-border p-8 rounded-2xl flex flex-col items-center text-center"
-          >
-            <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center mb-6">
-              <Globe className="w-6 h-6 text-brand-accent" />
-            </div>
-            <h3 className="text-xl font-bold uppercase tracking-wider mb-4">Global Offices</h3>
-            <p className="text-brand-muted-dark">
-              London, UK<br />
-              Tokyo, JP<br />
-              Toronto, CA
-            </p>
-          </motion.div>
+
         </div>
       </section>
     </div>

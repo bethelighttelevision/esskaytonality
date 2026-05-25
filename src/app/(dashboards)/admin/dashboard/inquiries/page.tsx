@@ -128,9 +128,6 @@ export default function AdminInquiries() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <Link href="/admin/dashboard" className="text-xs font-bold uppercase tracking-widest text-brand-muted-dark hover:text-brand-primary flex items-center gap-2 mb-2 transition-colors">
-            <ArrowLeft className="w-4 h-4" /> Back to Master Control
-          </Link>
           <h1 className="text-3xl font-bold uppercase tracking-tighter">
             Studio <span className="text-gradient">Inquiries</span>
           </h1>

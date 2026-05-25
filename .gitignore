@@ -33,6 +33,15 @@ yarn-error.log*
 # env files (can opt-in for committing if needed)
 .env*
 
+# camera raw files
+*.ARW
+*.arw
+
+# installer / binary files
+*.exe
+*.msi
+*.dmg
+
 # vercel
 .vercel
 

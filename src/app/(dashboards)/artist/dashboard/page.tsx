@@ -36,7 +36,7 @@ export default async function ArtistDashboard() {
   const totalStreams = releases?.reduce((sum, r) => sum + (r.play_count || 0), 0) || 0;
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 pt-24 pb-12">
       {/* Header Profile Section */}
       <div className="bg-brand-card p-8 rounded-xl border border-brand-border flex items-center justify-between">
         <div className="flex items-center gap-6">

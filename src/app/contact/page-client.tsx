@@ -108,7 +108,7 @@ export default function ContactPage() {
           transition={{ delay: 0.2 }}
           className="text-brand-muted text-lg leading-relaxed"
         >
-          Welcome to EsskayTonality – Your Ultimate Audio Production Studio! 
+          Welcome to EsskayTonality – Your Ultimate Music Platform! 
           We bring your sound to life with expert production, sound design, and world-class mixing.
         </motion.p>
       </div>
@@ -124,7 +124,7 @@ export default function ContactPage() {
           <div className="bg-brand-card border border-brand-border rounded-xl p-8 relative overflow-hidden group card-hover">
             <div className="absolute top-0 right-0 w-32 h-32 bg-brand-primary/5 rounded-full blur-3xl" />
             <h2 className="text-2xl font-bold uppercase tracking-wider mb-6 flex items-center gap-2">
-              <Sparkles className="w-6 h-6 text-brand-primary" /> Studio Details
+              <Sparkles className="w-6 h-6 text-brand-primary" /> Headquarter Details
             </h2>
             <div className="space-y-6">
               <a 
@@ -158,8 +158,8 @@ export default function ContactPage() {
                   <Globe className="w-5 h-5 text-brand-accent" />
                 </div>
                 <div>
-                  <p className="text-xs text-brand-muted-dark font-bold uppercase tracking-widest">Studio Location</p>
-                  <p className="font-semibold text-white">Rotterdam, Netherlands (Worldwide Services)</p>
+                  <p className="text-xs text-brand-muted-dark font-bold uppercase tracking-widest">Headquarter Location</p>
+                  <p className="font-semibold text-white">Overijssel, Netherlands</p>
                 </div>
               </div>
             </div>

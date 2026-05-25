@@ -34,7 +34,7 @@ export default async function UserDashboard() {
   const totalFavorites = favoritesData?.length || 0;
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 pt-24 pb-12">
       {/* Header Profile Section */}
       <div className="bg-brand-card p-8 rounded-xl border border-brand-border flex items-center gap-6">
         <div className="w-24 h-24 rounded-full bg-gradient-to-tr from-brand-primary to-brand-accent p-1">
