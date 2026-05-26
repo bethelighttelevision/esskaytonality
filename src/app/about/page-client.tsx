@@ -33,7 +33,7 @@ export default function AboutPage() {
       <section className="relative h-[60vh] min-h-[500px] flex items-center justify-center overflow-hidden mb-24">
         <div 
           className="absolute inset-0 bg-cover bg-center bg-fixed opacity-30"
-          style={{ backgroundImage: "url('https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?q=80&w=2070&auto=format&fit=crop')" }}
+          style={{ backgroundImage: "url('/sahir-alam.webp')" }}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-brand-bg via-brand-bg/80 to-transparent" />
         
@@ -93,7 +93,7 @@ export default function AboutPage() {
               <div className="absolute inset-0 bg-brand-primary/20 mix-blend-overlay" />
             </div>
             <div className="absolute -bottom-10 -left-10 bg-brand-card border border-brand-border p-8 rounded-2xl hidden md:block animate-bounce" style={{ animationDuration: '4s' }}>
-              <div className="text-5xl font-bold text-brand-accent mb-2">1B+</div>
+              <div className="text-5xl font-bold text-brand-accent mb-2">185K+</div>
               <div className="text-sm font-bold uppercase tracking-widest text-brand-muted">Global Streams</div>
             </div>
           </motion.div>

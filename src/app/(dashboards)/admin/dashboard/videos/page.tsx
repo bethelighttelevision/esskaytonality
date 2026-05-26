@@ -32,7 +32,7 @@ const emptyForm = {
   display_order: 0,
 };
 
-const categories = ["EssKay Tonality", "Live Sessions", "Music Videos", "Lyric Videos", "Behind the Scenes", "Interviews"];
+const categories = ["EssKay Tonality", "Originals Songs Videos", "Covers Songs Videos", "Group Songs Videos", "Poetries", "Music", "Live Sessions", "Interviews", "Behind the Scenes"];
 
 export default function AdminVideosPage() {
   const [videos, setVideos] = useState<VideoItem[]>([]);
