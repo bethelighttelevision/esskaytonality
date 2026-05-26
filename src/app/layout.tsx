@@ -4,7 +4,6 @@ import Navbar from "@/components/ui/Navbar";
 import Footer from "@/components/ui/Footer";
 import ScrollToTop from "@/components/ui/ScrollToTop";
 import ClientAnimations from "@/components/ui/ClientAnimations";
-import AnimatedFavicon from "@/components/ui/AnimatedFavicon";
 import "./globals.css";
 
 const inter = Inter({
@@ -98,7 +97,6 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col bg-brand-bg text-brand-text">
         <style>{`div[hidden]#S\\:0{display:block!important}`}</style>
         <ClientAnimations />
-        <AnimatedFavicon />
         <div className="relative z-10 flex flex-col min-h-full">
           <Navbar />
           <main className="flex-1">

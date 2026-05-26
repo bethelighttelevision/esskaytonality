@@ -357,6 +357,9 @@ export default function ProfessionalAudioPlayer({ title = "Tonality", subtitle =
   const [isShuffle, setIsShuffle] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const ytPlayerRef = useRef<any>(null);
+  const ytTimerRef = useRef<number | null>(null);
+  const [isYtReady, setIsYtReady] = useState(false);
   const currentTrack = tracks[currentTrackIndex];
 
   const handleNextTrack = useCallback(() => {
@@ -372,26 +375,89 @@ export default function ProfessionalAudioPlayer({ title = "Tonality", subtitle =
     setIsPlaying(true);
   }, [currentTrackIndex, tracks.length]);
 
+  const isLoopingRef = useRef(isLooping);
+  const isShuffleRef = useRef(isShuffle);
+  const handleNextTrackRef = useRef(handleNextTrack);
+  const handlePrevTrackRef = useRef(handlePrevTrack);
+  isLoopingRef.current = isLooping;
+  isShuffleRef.current = isShuffle;
+  handleNextTrackRef.current = handleNextTrack;
+  handlePrevTrackRef.current = handlePrevTrack;
+
+  // YouTube IFrame API setup
+  useEffect(() => {
+    if (typeof window !== "undefined" && !(window as any).YT) {
+      const tag = document.createElement("script");
+      tag.src = "https://www.youtube.com/iframe_api";
+      document.head.appendChild(tag);
+    }
+    const initPlayer = () => {
+      const YT = (window as any).YT;
+      if (YT?.Player) {
+        try { if (ytPlayerRef.current) ytPlayerRef.current.destroy(); } catch (_) {}
+        ytPlayerRef.current = new YT.Player("hidden-youtube-player", {
+          height: "0", width: "0",
+          videoId: tracks[0]?.youtubeId,
+          playerVars: { autoplay: 0, controls: 0, disablekb: 1, modestbranding: 1, rel: 0 },
+          events: {
+            onReady: (event: any) => { setIsYtReady(true); event.target.setVolume(volume * 100); },
+            onStateChange: (event: any) => {
+              const YTS = (window as any).YT.PlayerState;
+              if (event.data === YTS.ENDED) {
+                if (isLoopingRef.current) event.target.playVideo();
+                else handleNextTrackRef.current();
+                if (ytTimerRef.current) { clearInterval(ytTimerRef.current); ytTimerRef.current = null; }
+              }
+              if (event.data === YTS.PLAYING) { const d = event.target.getDuration(); if (d) setDuration(d); setIsPlaying(true); }
+              if (event.data === YTS.PAUSED) setIsPlaying(false);
+            }
+          }
+        });
+      }
+    };
+    if ((window as any).YT?.Player) initPlayer();
+    else (window as any).onYouTubeIframeAPIReady = initPlayer;
+  }, []);
+
   // Audio setup
   useEffect(() => {
     audioRef.current = new Audio();
     const a = audioRef.current;
-    const onEnded = () => { if (isLooping) { a.play().catch(() => {}); } else { handleNextTrack(); } };
+    const onEnded = () => {
+      if (isLoopingRef.current) { a.play().catch(() => {}); }
+      else { handleNextTrackRef.current(); }
+    };
     a.addEventListener("timeupdate", () => { if (audioRef.current) setCurrentTime(audioRef.current.currentTime); });
     a.addEventListener("loadedmetadata", () => { if (audioRef.current) setDuration(audioRef.current.duration); });
     a.addEventListener("ended", onEnded);
     return () => { a.removeEventListener("ended", onEnded); a.pause(); a.src = ""; };
-  }, [isLooping, handleNextTrack]);
+  }, []);
+
+  // YT time polling
+  useEffect(() => {
+    if (isPlaying && ytPlayerRef.current && isYtReady && currentTrack?.youtubeId) {
+      const poll = () => {
+        try { if (ytPlayerRef.current) setCurrentTime(ytPlayerRef.current.getCurrentTime()); } catch (_) {}
+      };
+      ytTimerRef.current = window.setInterval(poll, 350);
+    }
+    return () => { if (ytTimerRef.current) { clearInterval(ytTimerRef.current); ytTimerRef.current = null; } };
+  }, [isPlaying, isYtReady, currentTrack?.youtubeId]);
 
   useEffect(() => {
     if (!currentTrack) return;
-    const a = audioRef.current;
-    if (!a) return;
-    if (currentTrack.audioUrl) {
-      a.src = currentTrack.audioUrl;
-      a.volume = volume;
-      a.muted = isMuted;
-      if (isPlaying) a.play().catch(() => {});
+    if (ytPlayerRef.current && isYtReady) ytPlayerRef.current.pauseVideo();
+    if (audioRef.current) { audioRef.current.pause(); audioRef.current.src = ""; }
+    if (currentTrack.youtubeId && ytPlayerRef.current && isYtReady) {
+      try { ytPlayerRef.current.loadVideoById({ videoId: currentTrack.youtubeId }); } catch (_) {}
+    } else if (currentTrack.audioUrl) {
+      const a = audioRef.current;
+      if (a) {
+        a.src = currentTrack.audioUrl;
+        a.volume = volume;
+        a.muted = isMuted;
+        if (isPlaying) a.play().catch(() => {});
+      }
     }
   }, [currentTrackIndex]);
 
@@ -400,21 +466,33 @@ export default function ProfessionalAudioPlayer({ title = "Tonality", subtitle =
       audioRef.current.volume = volume;
       audioRef.current.muted = isMuted;
     }
-  }, [volume, isMuted]);
+    if (ytPlayerRef.current && isYtReady) {
+      try { ytPlayerRef.current.setVolume(volume * 100); } catch (_) {}
+    }
+  }, [volume, isMuted, isYtReady]);
 
   const togglePlay = useCallback(() => {
     if (!currentTrack) return;
+    if (currentTrack.youtubeId && ytPlayerRef.current && isYtReady) {
+      if (isPlaying) { ytPlayerRef.current.pauseVideo(); }
+      else { ytPlayerRef.current.playVideo(); }
+      return;
+    }
     const a = audioRef.current;
     if (!a || !currentTrack.audioUrl) return;
     if (isPlaying) { a.pause(); setIsPlaying(false); }
     else { a.play().catch(() => {}); setIsPlaying(true); }
-  }, [currentTrack, isPlaying]);
+  }, [currentTrack, isPlaying, isYtReady]);
 
   const handleSeek = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const time = parseFloat(e.target.value);
     setCurrentTime(time);
-    if (audioRef.current) audioRef.current.currentTime = time;
-  }, []);
+    if (currentTrack?.youtubeId && ytPlayerRef.current && isYtReady) {
+      try { ytPlayerRef.current.seekTo(time, true); } catch (_) {}
+    } else if (audioRef.current) {
+      audioRef.current.currentTime = time;
+    }
+  }, [currentTrack, isYtReady]);
 
   const handleVolumeChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const val = parseFloat(e.target.value);
@@ -525,6 +603,8 @@ export default function ProfessionalAudioPlayer({ title = "Tonality", subtitle =
           />
         )}
       </AnimatePresence>
+
+      <div id="hidden-youtube-player" style={{ position: "absolute", width: "1px", height: "1px", opacity: 0, pointerEvents: "none", overflow: "hidden", left: "-9999px" }} />
     </div>
   );
 }
