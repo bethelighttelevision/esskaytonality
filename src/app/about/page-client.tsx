@@ -33,7 +33,7 @@ export default function AboutPage() {
       <section className="relative h-[60vh] min-h-[500px] flex items-center justify-center overflow-hidden mb-24">
         <div 
           className="absolute inset-0 bg-cover bg-center bg-fixed opacity-30"
-          style={{ backgroundImage: "url('/sahir-alam.webp')" }}
+          style={{ backgroundImage: "url('https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?q=80&w=2070&auto=format&fit=crop')" }}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-brand-bg via-brand-bg/80 to-transparent" />
         
@@ -88,7 +88,7 @@ export default function AboutPage() {
             <div className="aspect-square md:aspect-[4/5] rounded-xl overflow-hidden border border-white/10 relative">
               <div 
                 className="absolute inset-0 bg-cover bg-center"
-                style={{ backgroundImage: "url('https://images.unsplash.com/photo-1501386761578-eac5c94b800a?q=80&w=2070&auto=format&fit=crop')" }}
+                style={{ backgroundImage: "url('/sahir-alam.webp')" }}
               />
               <div className="absolute inset-0 bg-brand-primary/20 mix-blend-overlay" />
             </div>
