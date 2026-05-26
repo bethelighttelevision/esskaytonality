@@ -71,6 +71,7 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="apple-mobile-web-app-title" content="ESSKAYTONALITY" />
         <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="google-site-verification" content="y9PBPRZFOqq0Smd4KlWHx9LFFI02xCu3TxfCTPvgx44" />
         <link rel="manifest" href="/manifest.json" />
         <link rel="canonical" href="https://esskaytonality.com" />
         <link rel="apple-touch-icon" href="/icon-192.png" />
@@ -80,6 +81,17 @@ export default function RootLayout({
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-TMS9KB6WMZ" />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', 'G-TMS9KB6WMZ');
+            `,
+          }}
         />
       </head>
       <body className="min-h-full flex flex-col bg-brand-bg text-brand-text">
