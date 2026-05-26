@@ -117,6 +117,14 @@ body {
 .anim-wave-4 { animation: anim-wave-4 1.3s ease-in-out infinite; }
 .anim-wave-5 { animation: anim-wave-5 0.9s ease-in-out infinite; }
 
+@keyframes wave-bar {
+  0%, 100% { transform: scaleY(1); }
+  50% { transform: scaleY(0.4); }
+}
+.animate-wave-bar {
+  animation: wave-bar 0.6s ease-in-out infinite;
+}
+
 @keyframes marquee {
   0%   { transform: translateX(0); }
   100% { transform: translateX(-50%); }

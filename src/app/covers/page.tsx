@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import AudioPlayer from "@/components/music/AudioPlayer";
+import ResponsiveAudioPlayer from "@/components/music/ResponsiveAudioPlayer";
 
 export const metadata: Metadata = {
   title: "Covers | ESSKAYTONALITY",
@@ -8,8 +8,6 @@ export const metadata: Metadata = {
 
 export default function CoversPage() {
   return (
-    <div className="pt-32 pb-40 min-h-screen bg-brand-bg">
-      <AudioPlayer title="Covers" subtitle="Cover songs reimagined by Esskaytonality." />
-    </div>
+    <ResponsiveAudioPlayer title="Covers" subtitle="Cover songs reimagined by Esskaytonality." />
   );
 }

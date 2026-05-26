@@ -19,6 +19,7 @@ export default function AudioPlayer({ title = "Tonality Originals", subtitle = "
   const [isShuffle, setIsShuffle] = useState(false);
   const ytPlayerRef = useRef<any>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const bottomPlayerRef = useRef<HTMLDivElement | null>(null);
   const [isYtReady, setIsYtReady] = useState(false);
 
   const currentTrack = tracks[currentTrackIndex];
@@ -74,7 +75,20 @@ export default function AudioPlayer({ title = "Tonality Originals", subtitle = "
       audioRef.current.muted = isMuted;
       if (isPlaying) audioRef.current.play().catch(() => {});
     }
-  }, [currentTrackIndex, isYtReady]);
+   }, [currentTrackIndex, isYtReady]);
+
+    // Auto-scroll to player when playback starts on mobile
+   useEffect(() => {
+     if (isPlaying && bottomPlayerRef.current) {
+       if (typeof window !== 'undefined' && window.innerWidth < 768) {
+         bottomPlayerRef.current.scrollIntoView({
+           behavior: 'smooth',
+           block: 'nearest',
+           inline: 'nearest'
+         });
+       }
+     }
+   }, [isPlaying]);
 
   useEffect(() => {
     let timer: any = null;
@@ -138,7 +152,7 @@ export default function AudioPlayer({ title = "Tonality Originals", subtitle = "
 
   return (
     <div className="relative overflow-hidden bg-brand-bg select-none">
-      <div className="container mx-auto px-6 md:px-12 py-16">
+      <div className="container mx-auto px-6 md:px-12 py-16 pb-24 md:pb-16">
         <div className="text-center mb-12 max-w-3xl mx-auto">
           <h1 className="text-4xl md:text-6xl font-bold uppercase tracking-tighter mb-4">{title}</h1>
           <p className="text-brand-muted-dark text-sm md:text-base max-w-xl mx-auto">{subtitle}</p>
@@ -163,15 +177,24 @@ export default function AudioPlayer({ title = "Tonality Originals", subtitle = "
                     }`}>
                     <div className="flex items-center gap-4 flex-1">
                       <div className="w-8 h-8 flex items-center justify-center shrink-0">
-                        <span className="text-sm font-bold text-brand-muted-dark group-hover:text-white transition-colors">{idx + 1}</span>
+                        {isSelected && isPlaying ? (
+                          <div className="flex items-end gap-[2px] h-4">
+                            <span className="w-[2.5px] bg-brand-primary rounded-full animate-wave-bar" style={{ height: "60%", animationDelay: "0ms" }} />
+                            <span className="w-[2.5px] bg-brand-primary rounded-full animate-wave-bar" style={{ height: "100%", animationDelay: "150ms" }} />
+                            <span className="w-[2.5px] bg-brand-accent rounded-full animate-wave-bar" style={{ height: "40%", animationDelay: "300ms" }} />
+                            <span className="w-[2.5px] bg-brand-accent rounded-full animate-wave-bar" style={{ height: "80%", animationDelay: "75ms" }} />
+                          </div>
+                        ) : (
+                          <span className="text-sm font-bold text-brand-muted-dark group-hover:text-white transition-colors">{idx + 1}</span>
+                        )}
                       </div>
                       <div className="w-12 h-12 rounded-xl overflow-hidden relative shrink-0 border border-white/10">
                         <img loading="lazy" src={track.image} alt={track.title} className="w-full h-full object-cover" />
                       </div>
-                      <div className="min-w-0">
-                        <h3 className={`font-bold text-sm tracking-wide uppercase transition-colors truncate ${isSelected ? "text-brand-primary" : "text-white group-hover:text-brand-primary"}`}>{track.title}</h3>
-                        <p className="text-xs text-brand-muted-dark truncate mt-0.5">{track.artist}</p>
-                      </div>
+                       <div className="min-w-0 flex-1">
+                          <h3 className={`font-bold text-sm tracking-wide uppercase transition-colors truncate ${isSelected ? "text-brand-primary" : "text-white group-hover:text-brand-primary"}`} title={track.title}>{track.title}</h3>
+                          <p className={`text-xs text-brand-muted-dark truncate mt-0.5`} title={track.artist}>{track.artist}</p>
+                       </div>
                     </div>
                     <div className="flex items-center gap-4 shrink-0 pl-4">
                       <span className="text-xs text-brand-muted-dark font-bold tracking-widest">{track.durationText}</span>
@@ -181,55 +204,112 @@ export default function AudioPlayer({ title = "Tonality Originals", subtitle = "
               })}
             </div>
           </div>
-          <div className="lg:col-span-5">
+          <div className="hidden lg:block lg:col-span-5">
             <NowPlayingShowcase isPlaying={isPlaying} currentTrack={currentTrack} />
           </div>
         </div>
       </div>
-      <div className="fixed bottom-0 inset-x-0 z-40 bg-brand-surface/95 border-t border-white/5 flex flex-col">
-        <div className="relative w-full h-1 bg-white/5 cursor-pointer group">
-          <input type="range" min={0} max={duration || 100} value={currentTime} onChange={handleSeek}
-            className="absolute -top-1 left-0 w-full h-3 appearance-none bg-transparent outline-none cursor-pointer accent-brand-primary"
-            style={{ background: `linear-gradient(to right, #00ffff 0%, #00ffff ${(currentTime / (duration || 1)) * 100}%, rgba(255,255,255,0.08) ${(currentTime / (duration || 1)) * 100}%, rgba(255,255,255,0.03) 100%)` }}
-          />
-        </div>
-        <div className="py-3 px-4 md:py-5 md:px-12 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3 min-w-0 flex-1 md:flex-initial md:w-1/3">
-            <div className="w-10 h-10 md:w-12 md:h-12 rounded-lg md:rounded-xl overflow-hidden border border-white/10 shrink-0 shadow-lg">
-              <img loading="lazy" src={currentTrack?.image} alt={currentTrack?.title} className="w-full h-full object-cover" />
-            </div>
-            <div className="min-w-0">
-              <h4 className="font-bold text-xs md:text-sm tracking-wide uppercase text-white truncate">{currentTrack?.title}</h4>
-              <p className="text-[10px] md:text-xs text-brand-muted-dark truncate mt-0.5">{currentTrack?.artist}</p>
-            </div>
-          </div>
-          <div className="hidden md:flex items-center gap-6 justify-center">
-            <button onClick={() => setIsLooping(!isLooping)} className={`p-2 rounded-full transition-colors ${isLooping ? "text-brand-primary" : "text-brand-muted-dark hover:text-white"}`}><RotateCcw className="w-4 h-4" /></button>
-            <button onClick={handlePrevTrack} className="p-2 text-brand-muted-dark hover:text-white"><SkipBack className="w-5 h-5" /></button>
-            <button onClick={togglePlay} className="w-12 h-12 rounded-full bg-brand-primary hover:bg-white text-black flex items-center justify-center transition-all duration-300">
-              {isPlaying ? <Pause className="w-5 h-5 text-black fill-black" /> : <Play className="w-5 h-5 text-black fill-black ml-0.5" />}
-            </button>
-            <button onClick={handleNextTrack} className="p-2 text-brand-muted-dark hover:text-white"><SkipForward className="w-5 h-5" /></button>
-            <button onClick={() => setIsShuffle(!isShuffle)} className={`p-2 rounded-full transition-colors ${isShuffle ? "text-brand-primary" : "text-brand-muted-dark hover:text-white"}`}><Shuffle className="w-4 h-4" /></button>
-          </div>
-          <div className="flex md:hidden items-center gap-2.5 shrink-0">
-            <button onClick={handlePrevTrack} className="p-2 text-brand-muted-dark hover:text-white"><SkipBack className="w-4 h-4" /></button>
-            <button onClick={togglePlay} className="w-9 h-9 rounded-full bg-brand-primary text-black flex items-center justify-center">
-              {isPlaying ? <Pause className="w-4 h-4 text-black fill-black" /> : <Play className="w-4 h-4 text-black fill-black ml-0.5" />}
-            </button>
-            <button onClick={handleNextTrack} className="p-2 text-brand-muted-dark hover:text-white"><SkipForward className="w-4 h-4" /></button>
-          </div>
-          <div className="hidden md:flex items-center gap-3 w-1/3 justify-end shrink-0">
-            <button onClick={toggleMute} className="text-brand-muted-dark hover:text-white p-2">
-              {isMuted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
-            </button>
-            <input type="range" min={0} max={1} step={0.01} value={isMuted ? 0 : volume} onChange={handleVolumeChange}
-              className="w-20 h-1 appearance-none bg-white/10 outline-none cursor-pointer accent-brand-primary"
-              style={{ background: `linear-gradient(to right, #00ffff 0%, #00ffff ${(isMuted ? 0 : volume) * 100}%, rgba(255,255,255,0.1) ${(isMuted ? 0 : volume) * 100}%, rgba(255,255,255,0.1) 100%)` }}
-            />
-          </div>
-        </div>
-      </div>
+       {/* Seekbar (shared) */}
+       <div className="relative w-full h-[2px] bg-white/[0.03] cursor-pointer group" ref={bottomPlayerRef}>
+         <div className="absolute top-0 left-0 h-full bg-white/30 group-hover:bg-white/50 transition-all duration-150"
+           style={{ width: `${(currentTime / (duration || 1)) * 100}%` }} />
+         <input type="range" min={0} max={duration || 100} value={currentTime} onChange={handleSeek}
+           className="absolute top-1/2 -translate-y-1/2 left-0 w-full h-5 appearance-none bg-transparent outline-none cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity"
+         />
+       </div>
+
+       {/* ── Mobile Mini Player (Spotify style) ── */}
+       <div className="fixed bottom-0 inset-x-0 z-40 flex md:hidden flex-col"
+         style={{ boxShadow: "0 -2px 20px rgba(0,0,0,0.6)" }}>
+         <div className="bg-black/80 backdrop-blur-2xl flex items-center gap-2 px-3 py-2.5">
+           {/* Album art */}
+           <div className="relative w-10 h-10 rounded-md overflow-hidden shrink-0 border border-white/10">
+             <img loading="lazy" src={currentTrack?.image || ''} alt={currentTrack?.title || ''} className="w-full h-full object-cover" />
+             {isPlaying && <div className="absolute inset-0 rounded-md ring-1 ring-white/20 animate-pulse" />}
+           </div>
+           {/* Track info */}
+           <div className="min-w-0 flex-1 ml-1 overflow-hidden">
+             <h4 className="text-xs font-semibold text-white truncate leading-tight" title={currentTrack?.title || ''}>
+               {currentTrack?.title || 'No track selected'}
+             </h4>
+             <p className="text-[10px] text-white/40 truncate leading-tight mt-0.5" title={currentTrack?.artist || ''}>
+               {currentTrack?.artist || ''}
+             </p>
+           </div>
+           {/* Controls */}
+           <div className="flex items-center gap-0.5 shrink-0">
+             <button onClick={handlePrevTrack} className="p-1.5 text-white/50 hover:text-white/80 transition-colors">
+               <SkipBack className="w-4 h-4" />
+             </button>
+             <button onClick={togglePlay}
+               className="w-9 h-9 rounded-full bg-white hover:bg-white/90 text-black flex items-center justify-center transition-all duration-150 active:scale-90"
+             >
+               {isPlaying
+                 ? <Pause className="w-4 h-4" />
+                 : <Play className="w-4 h-4 ml-0.5" />
+               }
+             </button>
+             <button onClick={handleNextTrack} className="p-1.5 text-white/50 hover:text-white/80 transition-colors">
+               <SkipForward className="w-4 h-4" />
+             </button>
+           </div>
+         </div>
+       </div>
+
+       {/* ── Desktop / Tablet Player ── */}
+       <div className="hidden md:flex fixed bottom-0 inset-x-0 z-40 bg-black/60 backdrop-blur-xl border-t border-white/[0.04] flex-col"
+         style={{ boxShadow: "0 -4px 30px rgba(0,0,0,0.5)" }}>
+         <div className="py-3 px-6 xl:px-10 flex items-center justify-between gap-4">
+           {/* Left: Track Info */}
+           <div className="flex items-center gap-3 min-w-0 w-[30%]">
+             <div className="relative w-11 h-11 rounded-lg overflow-hidden border border-white/10 shrink-0 shadow-lg">
+               <img loading="lazy" src={currentTrack?.image || ''} alt={currentTrack?.title || ''} className="w-full h-full object-cover" />
+               {isPlaying && (
+                 <div className="absolute inset-0 rounded-lg ring-1 ring-white/20 animate-pulse" />
+               )}
+             </div>
+             <div className="min-w-0 overflow-hidden">
+               <h3 className="text-sm font-bold tracking-wide uppercase text-white truncate" title={currentTrack?.title || ''}>{currentTrack?.title || 'No track'}</h3>
+               <p className="text-xs text-white/40 truncate mt-0.5" title={currentTrack?.artist || ''}>{currentTrack?.artist || ''}</p>
+             </div>
+           </div>
+           {/* Center: Play Controls */}
+           <div className="flex items-center gap-3 shrink-0">
+             <button onClick={() => setIsShuffle(!isShuffle)} className={`p-1.5 rounded-full transition-all duration-200 ${isShuffle ? "text-white/90 bg-white/10" : "text-white/30 hover:text-white/60 hover:bg-white/5"}`}>
+               <Shuffle className="w-3.5 h-3.5" />
+             </button>
+             <button onClick={handlePrevTrack} className="p-1.5 text-white/40 hover:text-white/80 transition-colors">
+               <SkipBack className="w-5 h-5" />
+             </button>
+             <button onClick={togglePlay}
+               className="w-11 h-11 rounded-full bg-white hover:bg-white/90 text-black flex items-center justify-center transition-all duration-200 active:scale-95 relative"
+               style={isPlaying ? { boxShadow: "0 0 20px rgba(255,255,255,0.2)" } : {}}
+             >
+               {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5 ml-0.5" />}
+             </button>
+             <button onClick={handleNextTrack} className="p-1.5 text-white/40 hover:text-white/80 transition-colors">
+               <SkipForward className="w-5 h-5" />
+             </button>
+             <button onClick={() => setIsLooping(!isLooping)} className={`p-1.5 rounded-full transition-all duration-200 ${isLooping ? "text-white/90 bg-white/10" : "text-white/30 hover:text-white/60 hover:bg-white/5"}`}>
+               <RotateCcw className="w-3.5 h-3.5" />
+             </button>
+           </div>
+           {/* Right: Volume + Time */}
+           <div className="flex items-center gap-3 w-[30%] justify-end shrink-0">
+             <span className="text-[11px] text-white/30 font-mono">{formatTime(currentTime)} / {formatTime(duration)}</span>
+             <button onClick={toggleMute} className="p-1.5 text-white/30 hover:text-white/60 transition-colors">
+               {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+             </button>
+             <div className="relative w-16 h-1 bg-white/10 rounded-full overflow-hidden cursor-pointer group/vol">
+               <div className="absolute top-0 left-0 h-full bg-white/40 group-hover/vol:bg-white/60 transition-colors"
+                 style={{ width: `${(isMuted ? 0 : volume) * 100}%` }} />
+               <input type="range" min={0} max={1} step={0.01} value={isMuted ? 0 : volume} onChange={handleVolumeChange}
+                 className="absolute top-1/2 -translate-y-1/2 left-0 w-full h-5 appearance-none bg-transparent outline-none cursor-pointer opacity-0"
+               />
+             </div>
+           </div>
+         </div>
+       </div>
       <div id="hidden-youtube-player" style={{ position: "absolute", width: "1px", height: "1px", opacity: 0, pointerEvents: "none", overflow: "hidden", left: "-9999px" }} />
     </div>
   );
@@ -286,4 +366,5 @@ const NowPlayingShowcase = memo(({ isPlaying, currentTrack }: { isPlaying: boole
     </div>
   );
 });
+
 NowPlayingShowcase.displayName = "NowPlayingShowcase";

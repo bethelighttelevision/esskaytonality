@@ -15,7 +15,9 @@ export interface PopularTrack {
   title: string
   streams: string
   time: string
-  youtubeId: string
+  youtubeId?: string
+  image?: string
+  audioUrl?: string
 }
 
 export interface Artist {
